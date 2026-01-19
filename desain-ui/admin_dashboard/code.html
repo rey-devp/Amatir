@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LogiTrack Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "card-dark": "#1a2c32",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased">
+<!-- Main Container -->
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden pb-20">
+<!-- Top App Bar -->
+<div class="flex items-center px-4 py-4 pt-12 pb-2 justify-between bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/50" data-alt="Admin profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAmDJErD5lzPtMFDGHsigaJnZ8LXs5nPhNaMDPH-pzkfVWm6NOiq_4DDT92oDAfIs2bR8Zd-IFW09R84SJdwsBXsP5AKpq6J0gK4K_-CXD1amDJfDFcD3qWk1_BVWqIDFVwh7Obg1pW-wohQduIpSZLARGnxxWhI8wRq_bJK-PD9D515nu09UAlI0p3v8yim9w4FCUhK-0pU7dZIGSrug-1ub2So5SYz5KhFBPDuOb8oBiN04vu0jG-7gynxTY--q73x8JDfStie6A");'>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-background-dark"></div>
+</div>
+<div class="flex flex-col">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">LogiTrack</h2>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-medium">Admin Panel</span>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<button class="flex items-center justify-center rounded-full size-10 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-primary/20 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full"></span>
+</button>
+</div>
+</div>
+<!-- Greeting -->
+<div class="px-4 pt-4 pb-2">
+<h3 class="text-slate-900 dark:text-white tracking-tight text-2xl font-bold leading-tight">Hello, Admin</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Here is your daily logistics summary.</p>
+</div>
+<!-- Stats Section -->
+<div class="flex flex-col gap-4 p-4 overflow-x-auto no-scrollbar">
+<!-- Summary Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Users Card -->
+<div class="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-[#1a2c32] shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="flex items-center text-emerald-500 text-xs font-bold bg-emerald-500/10 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12%
+                        </span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">Total Users</p>
+<p class="text-slate-900 dark:text-white tracking-tight text-2xl font-bold leading-tight mt-1">1,240</p>
+</div>
+</div>
+<!-- Transactions Card -->
+<div class="flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-[#1a2c32] shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<span class="flex items-center text-emerald-500 text-xs font-bold bg-emerald-500/10 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +5%
+                        </span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">Total Transactions</p>
+<p class="text-slate-900 dark:text-white tracking-tight text-2xl font-bold leading-tight mt-1">8,502</p>
+</div>
+</div>
+<!-- Revenue Card -->
+<div class="flex flex-col gap-3 rounded-xl p-5 bg-gradient-to-br from-[#13c8ec] to-[#0b8aacee] shadow-lg shadow-primary/20">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-white/20 rounded-lg text-white">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="flex items-center text-white text-xs font-bold bg-white/20 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +8%
+                        </span>
+</div>
+<div>
+<p class="text-white/80 text-sm font-medium leading-normal">Total Revenue</p>
+<p class="text-white tracking-tight text-2xl font-bold leading-tight mt-1">$45,200</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Title -->
+<div class="px-4 pt-4 pb-2 flex justify-between items-end">
+<h1 class="text-slate-900 dark:text-white text-[20px] font-bold leading-tight tracking-[-0.015em]">Quick Actions</h1>
+<button class="text-primary text-sm font-medium">View All</button>
+</div>
+<!-- Quick Actions Grid -->
+<div class="grid grid-cols-2 gap-3 p-4">
+<!-- Kelola User -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 bg-white dark:bg-[#1a2c32] border border-slate-200 dark:border-slate-800 shadow-sm active:scale-95 transition-all overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">manage_accounts</span>
+</div>
+<div class="text-center z-10">
+<p class="text-slate-900 dark:text-white text-base font-bold leading-tight">Kelola User</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Couriers &amp; Customers</p>
+</div>
+</button>
+<!-- Kelola Produk -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 bg-white dark:bg-[#1a2c32] border border-slate-200 dark:border-slate-800 shadow-sm active:scale-95 transition-all overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">inventory_2</span>
+</div>
+<div class="text-center z-10">
+<p class="text-slate-900 dark:text-white text-base font-bold leading-tight">Kelola Produk</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Stock &amp; Categories</p>
+</div>
+</button>
+<!-- Analytics (Extra for grid balance) -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 bg-white dark:bg-[#1a2c32] border border-slate-200 dark:border-slate-800 shadow-sm active:scale-95 transition-all overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">monitoring</span>
+</div>
+<div class="text-center z-10">
+<p class="text-slate-900 dark:text-white text-base font-bold leading-tight">Analytics</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Performance Reports</p>
+</div>
+</button>
+<!-- Settings (Extra for grid balance) -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 bg-white dark:bg-[#1a2c32] border border-slate-200 dark:border-slate-800 shadow-sm active:scale-95 transition-all overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</div>
+<div class="text-center z-10">
+<p class="text-slate-900 dark:text-white text-base font-bold leading-tight">Settings</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">App Configuration</p>
+</div>
+</button>
+</div>
+<!-- Recent Activity Header (Optional filler for clean look) -->
+<div class="px-4 pt-2 pb-2">
+<h2 class="text-slate-900 dark:text-white text-[18px] font-bold leading-tight tracking-[-0.015em]">Recent Alert</h2>
+</div>
+<div class="px-4 pb-20">
+<div class="flex items-center gap-3 p-4 rounded-xl bg-orange-500/10 border border-orange-500/20">
+<div class="size-10 rounded-full bg-orange-500/20 flex shrink-0 items-center justify-center text-orange-500">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white font-medium text-sm">Low Stock Alert</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Product "Packaging Tape" is below threshold.</p>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-[#15262a] border-t border-slate-200 dark:border-slate-800 pb-5 pt-3 px-6 z-50">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[26px]">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[26px]">map</span>
+<span class="text-[10px] font-medium">Map</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[26px]">chat</span>
+<span class="text-[10px] font-medium">Messages</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[26px]">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

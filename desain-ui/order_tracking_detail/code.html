@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Tracking Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "primary-dark": "#0ea5c4",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "surface-dark": "#16262a",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111f22; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #325e67; 
+            border-radius: 3px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden">
+<div class="relative flex min-h-screen w-full flex-col pb-24">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-2 justify-between border-b border-gray-200 dark:border-white/5">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-white" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Order Details</h2>
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-slate-500 dark:text-[#92c0c9]">
+<span class="material-symbols-outlined" style="font-size: 24px;">support_agent</span>
+</button>
+</header>
+<!-- Main Scrollable Content -->
+<main class="flex-1 flex flex-col gap-6 p-4">
+<!-- Hero Status Card with Map -->
+<section class="rounded-xl bg-white dark:bg-surface-dark shadow-sm dark:shadow-[0_0_4px_rgba(0,0,0,0.3)] overflow-hidden">
+<!-- Map Preview Area -->
+<div class="h-32 w-full relative bg-gray-200 dark:bg-gray-800">
+<img class="w-full h-full object-cover opacity-80" data-alt="Abstract map background with street patterns" data-location="Jakarta City Map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdUNOyL083Orvk-TTsLhiwh470rjG33uwoA--CeU7THXaLJkOt1Zbm9JuwafDTgu6SZGL9gFq0JpElYlT3xMOq_T_niaPcjpxs8tJ-2psdbyGtaGAYafJyrAs0-mQspUr23qoYEFLeeuYbe9Xa_W9yiq8CjuRvW1fxEtal6h7aVG0cSI6g18gAxpIjc1ey7O6amYqZnYOMntSZTwDeZBYool0GiZFL0XjVaerviLUtZhteirvmWh56594MwAwf5O797Ct0F9JSsj4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white dark:from-surface-dark to-transparent"></div>
+<!-- Floating Truck Icon on Map -->
+<div class="absolute bottom-4 left-4 bg-primary text-black p-2 rounded-full shadow-lg shadow-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-size: 20px;">local_shipping</span>
+</div>
+</div>
+<!-- Card Content -->
+<div class="p-4 pt-2">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-slate-500 dark:text-[#92c0c9] text-xs font-medium uppercase tracking-wider mb-1">Tracking ID</p>
+<div class="flex items-center gap-2">
+<p class="text-xl font-bold tracking-tight">LOGI-8839201</p>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>
+</button>
+</div>
+</div>
+<div class="text-right">
+<p class="text-slate-500 dark:text-[#92c0c9] text-xs font-medium uppercase tracking-wider mb-1">Est. Arrival</p>
+<p class="text-primary font-bold">Today, 16:00</p>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between text-sm">
+<span class="font-medium">On the way</span>
+<span class="text-slate-500 dark:text-[#92c0c9]">3 of 4 steps</span>
+</div>
+<div class="h-2 w-full rounded-full bg-slate-100 dark:bg-[#325e67] overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: 75%;"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Timeline Section -->
+<section>
+<h3 class="text-lg font-bold mb-4 px-1">Tracking History</h3>
+<div class="grid grid-cols-[40px_1fr] gap-x-0">
+<!-- Step 1: Current (Out for Delivery) -->
+<div class="flex flex-col items-center">
+<div class="relative z-10 flex size-6 items-center justify-center rounded-full bg-primary ring-4 ring-white dark:ring-background-dark shadow-lg shadow-primary/30">
+<div class="size-2 rounded-full bg-black"></div>
+</div>
+<div class="w-[2px] bg-gradient-to-b from-primary to-slate-200 dark:to-[#325e67] h-full grow min-h-[4rem]"></div>
+</div>
+<div class="flex flex-col pb-8 pl-4">
+<p class="text-primary text-base font-bold leading-normal">Out for Delivery</p>
+<p class="text-slate-600 dark:text-[#92c0c9] text-sm leading-relaxed">Your package is on the way with our courier.</p>
+<div class="mt-2 flex items-center gap-3 bg-white dark:bg-surface-dark p-3 rounded-lg border border-slate-100 dark:border-white/5">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of courier Budi Santoso" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAujIbPjH8524m9DcL-mNRCL0spYICOoNpx7AYp2TU8QUicMrHO8sclRH-s6oBAMqGPq9EMcmAVI-6MpH31X9n95y01HjGtaxjrz7Y086vlXSOTskAY2IkujfLu06PlOJpjtXqmleOgZlWWZkgTDz9SmzF0gtVgzHcjdb3CJ6gFonkNN5F1kRRfbOTi3kStTSXakgPTU5ogH01BLPTjNyr4mJl-PEp93qg7r4c1qSCKHaupU7sSIgJPqWECRjCz1_ia5LmGF4JiAOA"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold">Budi Santoso</p>
+<div class="flex items-center gap-1 text-xs text-slate-500 dark:text-[#92c0c9]">
+<span class="material-symbols-outlined text-[14px]">star</span>
+<span>4.9 • Courier</span>
+</div>
+</div>
+<button class="size-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">call</span>
+</button>
+</div>
+<p class="text-xs text-slate-400 mt-2 font-medium">13:45 PM</p>
+</div>
+<!-- Step 2: Past (Departed) -->
+<div class="flex flex-col items-center">
+<div class="relative z-10 flex size-3 items-center justify-center rounded-full bg-slate-300 dark:bg-[#325e67]"></div>
+<div class="w-[2px] bg-slate-200 dark:bg-[#325e67] h-full grow min-h-[3rem]"></div>
+</div>
+<div class="flex flex-col pb-8 pl-4 opacity-80">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Departed from Hub</p>
+<p class="text-slate-500 dark:text-[#92c0c9] text-sm font-normal leading-normal">Jakarta Central Hub</p>
+<p class="text-xs text-slate-400 mt-1">10:00 AM</p>
+</div>
+<!-- Step 3: Past (Arrived at Warehouse) -->
+<div class="flex flex-col items-center">
+<div class="relative z-10 flex size-3 items-center justify-center rounded-full bg-slate-300 dark:bg-[#325e67]"></div>
+<div class="w-[2px] bg-slate-200 dark:bg-[#325e67] h-full grow min-h-[3rem]"></div>
+</div>
+<div class="flex flex-col pb-8 pl-4 opacity-60">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Arrived at Warehouse</p>
+<p class="text-slate-500 dark:text-[#92c0c9] text-sm font-normal leading-normal">Jakarta Central Warehouse</p>
+<p class="text-xs text-slate-400 mt-1">Yesterday, 22:00</p>
+</div>
+<!-- Step 4: Start (Order Placed) -->
+<div class="flex flex-col items-center">
+<div class="relative z-10 flex size-3 items-center justify-center rounded-full bg-slate-300 dark:bg-[#325e67]"></div>
+</div>
+<div class="flex flex-col pb-2 pl-4 opacity-40">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Order Placed</p>
+<p class="text-slate-500 dark:text-[#92c0c9] text-sm font-normal leading-normal">Online Store</p>
+<p class="text-xs text-slate-400 mt-1">Yesterday, 09:00</p>
+</div>
+</div>
+</section>
+<!-- Proof of Delivery Section (Simulated for UI completeness) -->
+<section class="mt-2">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary">image</span>
+<h3 class="text-lg font-bold">Proof of Delivery</h3>
+</div>
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-white dark:bg-surface-dark p-3 border border-slate-100 dark:border-white/5">
+<div class="flex flex-col justify-center gap-1 flex-1">
+<p class="text-slate-500 dark:text-[#92c0c9] text-xs font-normal leading-normal">Status</p>
+<p class="text-slate-900 dark:text-white text-sm font-bold leading-tight">Pending Delivery</p>
+<p class="text-slate-500 dark:text-[#587a81] text-xs font-normal leading-normal mt-1">Photo will appear here upon arrival</p>
+</div>
+<div class="w-24 h-24 bg-slate-100 dark:bg-[#111f22] rounded-lg flex items-center justify-center text-slate-300 dark:text-[#325e67] border-2 border-dashed border-slate-200 dark:border-[#325e67]" data-alt="Placeholder for proof of delivery image">
+<span class="material-symbols-outlined" style="font-size: 32px;">photo_camera</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-slate-200 dark:border-white/5 z-40">
+<button class="group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-primary text-slate-900 gap-2 text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-all active:scale-[0.98]">
+<span>Konfirmasi Terima Barang</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" style="font-size: 20px;">check_circle</span>
+</button>
+</div>
+</div>
+</body></html>

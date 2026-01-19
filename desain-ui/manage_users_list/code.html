@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LogiTrack - Manage Users</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "surface-dark": "#172a2d", // Slightly lighter than bg for cards/inputs
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar for horizontal scrolling chips */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-black">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto border-x border-gray-200 dark:border-gray-800 shadow-2xl">
+<!-- Header -->
+<header class="sticky top-0 z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pt-safe-top">
+<div class="flex items-center px-4 py-3 justify-between">
+<h1 class="text-2xl font-bold tracking-tight">Manage Users</h1>
+<button class="flex items-center justify-center size-10 rounded-full bg-surface-dark/10 dark:bg-white/10 active:scale-95 transition-transform text-slate-900 dark:text-white">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="px-4 pb-2">
+<div class="relative flex items-center w-full h-12 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 focus-within:border-primary dark:focus-within:border-primary transition-colors overflow-hidden">
+<div class="grid place-items-center h-full w-12 text-gray-400">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="peer h-full w-full bg-transparent text-sm outline-none text-slate-900 dark:text-white placeholder:text-gray-400 pr-4" id="search" placeholder="Search by name or email..." type="text"/>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 px-4 py-3 overflow-x-auto hide-scrollbar border-b border-gray-200 dark:border-gray-800">
+<button class="flex shrink-0 h-8 items-center justify-center px-4 rounded-full bg-primary text-black text-sm font-semibold transition-colors">
+                    All
+                </button>
+<button class="flex shrink-0 h-8 items-center justify-center px-4 rounded-full bg-gray-200 dark:bg-surface-dark border border-transparent hover:border-gray-300 dark:hover:border-gray-600 text-slate-700 dark:text-gray-300 text-sm font-medium transition-colors">
+                    Admin
+                </button>
+<button class="flex shrink-0 h-8 items-center justify-center px-4 rounded-full bg-gray-200 dark:bg-surface-dark border border-transparent hover:border-gray-300 dark:hover:border-gray-600 text-slate-700 dark:text-gray-300 text-sm font-medium transition-colors">
+                    Courier
+                </button>
+<button class="flex shrink-0 h-8 items-center justify-center px-4 rounded-full bg-gray-200 dark:bg-surface-dark border border-transparent hover:border-gray-300 dark:hover:border-gray-600 text-slate-700 dark:text-gray-300 text-sm font-medium transition-colors">
+                    Warehouse
+                </button>
+<button class="flex shrink-0 h-8 items-center justify-center px-4 rounded-full bg-gray-200 dark:bg-surface-dark border border-transparent hover:border-gray-300 dark:hover:border-gray-600 text-slate-700 dark:text-gray-300 text-sm font-medium transition-colors">
+                    Customer
+                </button>
+</div>
+</header>
+<!-- User List -->
+<main class="flex-1 flex flex-col p-2 space-y-1">
+<!-- User Item: Admin -->
+<div class="group flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-dark transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-gray-700 overflow-hidden shadow-sm" data-alt="Portrait of Sarah Jenkins looking professional" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBB2NFd-UOkhpxP6H7k5n9NdE5_KWwpEx8PH5SQRhrbqf8cV4UtY8u2yTEqNEfrUosinFifhDEMRjgHnP2BXDTd8_7A0xv6rJvYaT3GvxIIvJx6X5msYkIZ3WlxgNigxmoyj9Bv2pSyDltieZfCIYklWf7bRwmn6o5sdNYPDwUX6MwlqLQkBlYuipFJTSlRcmjDulDt0TLtSQ1uMtdwaCs_O4LtPJgyUDt-2Ge3AFg2WyYkkh5rCvF6Y1XQcIOT5qyWGQFQn5uCFbM'); background-size: cover; background-position: center;"></div>
+<div class="absolute bottom-0 right-0 size-3 rounded-full bg-green-500 border-2 border-background-light dark:border-background-dark"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Sarah Jenkins</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/20 text-primary uppercase tracking-wide">
+                            Admin
+                        </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">sarah.j@logitrack.com</p>
+</div>
+<button class="shrink-0 text-gray-400 hover:text-slate-900 dark:hover:text-white p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- User Item: Courier -->
+<div class="group flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-dark transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-gray-700 overflow-hidden shadow-sm" data-alt="Portrait of Mike Ross looking friendly" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDwPjIkIlxPyXqCxs7NI0RTPErpI8oY15RTECjML9wjPTe7QlXOoj3TkvZJ1SbbEe5yr6DFegy8jEELdHsPqZ0e6jO2z11yZLb88j52-adcfMbJxUrIoq_fu9SjL2Fy668C1iLsP5j5AmPcjTyzc8tRv_gPtazl0OiMt76GF1bj-FFzVBPNwx2X9RWor6vqE1CxlYnVMOyPFpm2IdUQoMOy8Ugxm-XLOTgoJpqQPE8QOeIY7t9Y66DM97MEIF-hcxxU4bWgZA9bKKI'); background-size: cover; background-position: center;"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Mike Ross</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-600 dark:text-orange-400 uppercase tracking-wide">
+                            Courier
+                        </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">mike.ross@delivery.com</p>
+</div>
+<button class="shrink-0 text-gray-400 hover:text-slate-900 dark:hover:text-white p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- User Item: Warehouse -->
+<div class="group flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-dark transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-indigo-900/50 flex items-center justify-center text-indigo-300 font-bold text-lg border border-indigo-500/20">
+                        CD
+                    </div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Central Depot</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
+                            Warehouse
+                        </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">dispatch@depot01.com</p>
+</div>
+<button class="shrink-0 text-gray-400 hover:text-slate-900 dark:hover:text-white p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- User Item: Customer -->
+<div class="group flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-dark transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-gray-700 overflow-hidden shadow-sm" data-alt="Portrait of John Doe smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrMImsBtiszvyt9fYF-JB1rKEIJKBH7-Pvzp5mGxmVL_khQM-9dXpklsS2pg2Xvge34MKzeBGAIQku4no2pb1GKVHiPOi23bYyh1iY45QavJ-tqT4VxQGqgSbyQqzfs9-nGnp10fjaNHEe3eLt9LrtU9sScUJluWl8JI-K33bmPEEMESjp0BDL0q4rf_k_H2PRsY_lTmctGpttmPBD5t0mWluv-HTl1OdzXzCwuX0MOBoLuk0JhxsET-4gqs-Jaw6e8LBr0kC5GY0'); background-size: cover; background-position: center;"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">John Doe</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">
+                            Customer
+                        </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">john.d@gmail.com</p>
+</div>
+<button class="shrink-0 text-gray-400 hover:text-slate-900 dark:hover:text-white p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- User Item: Courier 2 -->
+<div class="group flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-dark transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-gray-700 overflow-hidden shadow-sm" data-alt="Portrait of David Kim in casual wear" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzbYziEapLgZdNzTG6YbbMljtk02rlIF0_IsMQ8osIMzZbtuF_5o2jdV64zneEeysgR9d6ccZogMWb3ZDPx2tOI9ylfjXfpDzv4wd4ua_RFpc4QHxhy4qIuMswt73g97pfBLVwPBTdELlv-DxblsjCy_WSevSZDYE-g15sFqjeD76-MMpt-h3mF_YrX5qXfexNX6pUNtZper2wSq0jNu5AeDHgBl87uV3dgZt6-Zl-1SyiqGsCTm4zbQ9kXe9rLMyYwqnwP5jZjTc'); background-size: cover; background-position: center;"></div>
+<div class="absolute bottom-0 right-0 size-3 rounded-full bg-yellow-500 border-2 border-background-light dark:border-background-dark"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">David Kim</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-600 dark:text-orange-400 uppercase tracking-wide">
+                            Courier
+                        </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">d.kim_express@logitrack.com</p>
+</div>
+<button class="shrink-0 text-gray-400 hover:text-slate-900 dark:hover:text-white p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- User Item: Customer 2 -->
+<div class="group flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-dark transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-pink-900/50 flex items-center justify-center text-pink-300 font-bold text-lg border border-pink-500/20">
+                        EW
+                    </div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Emily White</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">
+                            Customer
+                        </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">emily.w@outlook.com</p>
+</div>
+<button class="shrink-0 text-gray-400 hover:text-slate-900 dark:hover:text-white p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- User Item: Warehouse 2 -->
+<div class="group flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-dark transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-gray-700 overflow-hidden shadow-sm" data-alt="Portrait of warehouse manager Robert" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkhU_lcXldtAt71R76MHlRtku5zBwc7F3aK-2ycPbJ5oB02vG1Y_YpnpdMm7qzL2BS2ygrVthwa2ilqfr8F7LU8bsmAapDDjlhQlESxg0nUgSOJhYQHWOy1xnDT6djkJvICeqjwP03I6a7VID0DdMgulJMhwnaazLaUrTnjYCuYu1bnKf85Ffw9jWtC6MqJsMULIitRBgffnvlpYUP_WoknZnKIOBkMYrW6ihgfTKLIlhoBJKK0QaWg2DhKMR73uiyxuzX_0H4gpM'); background-size: cover; background-position: center;"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Robert Fox</p>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
+                            Warehouse
+                        </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">r.fox@logitrack.com</p>
+</div>
+<button class="shrink-0 text-gray-400 hover:text-slate-900 dark:hover:text-white p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</main>
+<!-- Floating Action Button for smaller screens where header might scroll away, though we used sticky header. 
+             This is just to add that nice "app" feel for adding users quickly at bottom -->
+<div class="fixed bottom-6 right-6 lg:hidden">
+<button class="flex items-center justify-center size-14 rounded-full bg-primary shadow-lg shadow-primary/30 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-black text-2xl">person_add</span>
+</button>
+</div>
+</div>
+</body></html>
