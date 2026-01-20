@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warehouse Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "surface-dark": "#1a2c32",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for hiding scrollbar in horizontal lists but allowing scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen relative overflow-x-hidden pb-24 text-slate-900 dark:text-white">
+<!-- Header Section -->
+<header class="sticky top-0 z-30 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm transition-colors duration-300">
+<div class="flex items-center justify-between p-4 pb-2">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm" data-alt="Profile picture of a warehouse manager" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCkvrh8fD0M4uyC0zr26yuDagU0xdZlHxhutihWa9akj60HeCCXw7dsoo0HgauwuaTBMxXctIRjy6U4QigRfmgaOlyb-jCmLNP4XA5ty9NX-E4Hl9nkpmJh5h-E0XRy6_CBR-QNfIbyTh01KnbEsPUbqxzvdpntkXSiAQpvkUHWxmkWFQ8z1FUJT417Ava8K4h55GmcEV87huSBpbuji_jdxQ6SUnGps6FjWf7YzZ_bmDjogAme89ijNfcbiu80pa1o-yc_2WFEcx4");'>
+</div>
+<div class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-background-dark"></div>
+</div>
+<div class="flex flex-col">
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Good Morning,</p>
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight">Warehouse 4</h2>
+</div>
+</div>
+<button class="flex items-center justify-center h-10 w-10 rounded-full bg-white dark:bg-surface-dark text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10">
+<span class="material-symbols-outlined" style="font-size: 24px;">notifications</span>
+</button>
+</div>
+<div class="px-4 pb-2">
+<p class="text-xs font-semibold text-primary uppercase tracking-wider">Oct 24, 2023</p>
+</div>
+</header>
+<!-- Stats Overview -->
+<section class="px-4 py-2">
+<div class="grid grid-cols-2 gap-4">
+<!-- Incoming Card -->
+<div class="flex flex-col gap-3 rounded-2xl p-5 bg-white dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-4xl text-primary">input</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(19,200,236,0.6)]"></div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Incoming</p>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">142</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-emerald-500 text-sm">trending_up</span>
+<p class="text-emerald-500 text-xs font-bold">+12%</p>
+<p class="text-slate-400 text-xs ml-1">vs yesterday</p>
+</div>
+</div>
+</div>
+<!-- Outgoing Card -->
+<div class="flex flex-col gap-3 rounded-2xl p-5 bg-white dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-4xl text-purple-400">output</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-2 w-2 rounded-full bg-purple-400"></div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Outgoing</p>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">89</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-emerald-500 text-sm">trending_flat</span>
+<p class="text-emerald-500 text-xs font-bold">On Track</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Filters / Tabs -->
+<section class="mt-4 px-4 sticky top-[80px] z-20">
+<div class="flex gap-2 p-1 overflow-x-auto no-scrollbar bg-slate-100/50 dark:bg-surface-dark/50 backdrop-blur-md rounded-xl ring-1 ring-black/5 dark:ring-white/5">
+<button class="flex-1 flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-primary shadow-sm ring-1 ring-black/5 dark:ring-transparent px-4 transition-all duration-200">
+<span class="text-slate-900 dark:text-slate-900 text-sm font-bold">Incoming</span>
+<span class="flex items-center justify-center h-5 px-1.5 rounded-full bg-primary/20 dark:bg-black/10 text-primary dark:text-slate-900 text-[10px] font-bold">12</span>
+</button>
+<button class="flex-1 flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-transparent hover:bg-white/50 dark:hover:bg-white/5 px-4 transition-all duration-200">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Outgoing</span>
+</button>
+<button class="flex-1 flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-transparent hover:bg-white/50 dark:hover:bg-white/5 px-4 transition-all duration-200">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">History</span>
+</button>
+</div>
+</section>
+<!-- List Header -->
+<section class="px-5 pt-6 pb-2 flex items-center justify-between">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Pending Arrivals</h3>
+<button class="text-primary text-sm font-medium flex items-center gap-1">
+            Filter <span class="material-symbols-outlined text-base">filter_list</span>
+</button>
+</section>
+<!-- Package List -->
+<section class="flex flex-col gap-3 px-4 pb-4">
+<!-- Item 1 -->
+<div class="group flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/5 active:scale-[0.98] transition-transform duration-100">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-sm">#LOG-9921</h4>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Origin: <span class="font-medium text-slate-700 dark:text-slate-300">Shanghai</span></p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-800/50">
+                    Pending
+                </span>
+</div>
+<div class="h-px bg-slate-100 dark:bg-slate-700 w-full"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-400 text-sm">package_2</span>
+<span class="text-slate-600 dark:text-slate-300 text-xs font-medium">12 Boxes</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-400 text-sm">schedule</span>
+<span class="text-slate-600 dark:text-slate-300 text-xs font-medium">Arriving in 2h</span>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/5 active:scale-[0.98] transition-transform duration-100">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">flight_land</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-sm">#TRK-8821</h4>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Origin: <span class="font-medium text-slate-700 dark:text-slate-300">New York</span></p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-800/50">
+                    Pending
+                </span>
+</div>
+<div class="h-px bg-slate-100 dark:bg-slate-700 w-full"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-400 text-sm">pallet</span>
+<span class="text-slate-600 dark:text-slate-300 text-xs font-medium">2 Pallets</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-400 text-sm">schedule</span>
+<span class="text-slate-600 dark:text-slate-300 text-xs font-medium">Arriving in 4h</span>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group flex flex-col gap-3 p-4 rounded-xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/5 active:scale-[0.98] transition-transform duration-100">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-sm">#LOG-3321</h4>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Origin: <span class="font-medium text-slate-700 dark:text-slate-300">Berlin</span></p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-800/50">
+                    Pending
+                </span>
+</div>
+<div class="h-px bg-slate-100 dark:bg-slate-700 w-full"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-400 text-sm">inventory_2</span>
+<span class="text-slate-600 dark:text-slate-300 text-xs font-medium">5 Crates</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-400 text-sm">schedule</span>
+<span class="text-slate-600 dark:text-slate-300 text-xs font-medium">Delayed</span>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Completed Item (Visual variety) -->
+<div class="group flex flex-col gap-3 p-4 rounded-xl bg-slate-50 dark:bg-surface-dark/40 border border-dashed border-slate-200 dark:border-slate-700 opacity-70 hover:opacity-100 transition-opacity duration-200">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div>
+<h4 class="text-slate-700 dark:text-slate-300 font-bold text-sm line-through">#LOG-1029</h4>
+<p class="text-slate-400 dark:text-slate-500 text-xs">Origin: <span class="font-medium">Tokyo</span></p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                    Processed
+                </span>
+</div>
+</div>
+</section>
+<!-- FAB: Floating Action Button -->
+<div class="fixed bottom-24 right-5 z-40">
+<button class="group flex items-center justify-center h-16 w-16 rounded-2xl bg-primary text-slate-900 shadow-[0_8px_30px_rgb(19,200,236,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-[32px] group-hover:rotate-12 transition-transform duration-300">qr_code_scanner</span>
+<!-- Tooltip/Label purely visual for FAB clarity if needed, keeping simple as per request -->
+</button>
+</div>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/5 pb-safe z-30">
+<div class="flex items-center justify-around h-20 px-2 pb-2">
+<a class="flex flex-col items-center gap-1 p-2 min-w-[64px] text-primary" href="#">
+<span class="material-symbols-outlined text-[28px] font-variation-settings-fill">dashboard</span>
+<span class="text-[10px] font-bold">Dash</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 min-w-[64px] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined text-[28px]">inventory</span>
+<span class="text-[10px] font-medium">Inventory</span>
+</a>
+<div class="w-8"></div> <!-- Spacer for FAB visual breathing room if centered, here kept right aligned so standard spacer -->
+<a class="flex flex-col items-center gap-1 p-2 min-w-[64px] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined text-[28px]">calendar_month</span>
+<span class="text-[10px] font-medium">Schedule</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 min-w-[64px] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined text-[28px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Safe area padding for iPhones without physical home button -->
+<style>
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        .font-variation-settings-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</body></html>
