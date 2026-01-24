@@ -52,6 +52,7 @@ class TrackingHistory {
   final String location;
   final String timestamp;
   final String updatedBy;
+  final String? proofUrl;
 
   TrackingHistory({
     required this.status,
@@ -59,6 +60,7 @@ class TrackingHistory {
     required this.location,
     required this.timestamp,
     required this.updatedBy,
+    this.proofUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -68,6 +70,7 @@ class TrackingHistory {
       'location': location,
       'timestamp': timestamp,
       'updated_by': updatedBy,
+      'proof_url': proofUrl,
     };
   }
 
@@ -78,6 +81,7 @@ class TrackingHistory {
       location: map['location'] ?? '',
       timestamp: map['timestamp'] ?? '',
       updatedBy: map['updated_by'] ?? '',
+      proofUrl: map['proof_url'],
     );
   }
 }

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "822048954401",
+    "firebase_url": "https://amatir-e99de-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "amatir-e99de",
+    "storage_bucket": "amatir-e99de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822048954401:android:e407d5b7f282e0a381eb60",
+        "android_client_info": {
+          "package_name": "com.example.amatir"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjzZbqfftFdhr3ao04Nct9vblBLIO_K8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

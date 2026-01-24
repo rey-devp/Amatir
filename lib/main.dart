@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'firebase_options.dart';
 import 'ui/role_warehouse/dashboard_warehouse.dart';
 import 'ui/role_warehouse/update_package_location.dart';
 import 'ui/role_courier/dashboard_courier.dart';
@@ -9,7 +12,19 @@ import 'ui/role_admin/admin_dashboard.dart';
 import 'ui/role_admin/user_list_page.dart';
 import 'config/app_constants.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await dotenv.load(fileName: ".env");
+    print("✅ Environment variables loaded.");
+
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("✅ Firebase initialized successfully!");
+  } catch (e) {
+    print("❌ Failed to initialize Firebase: $e");
+  }
   runApp(const MyApp());
 }
 
