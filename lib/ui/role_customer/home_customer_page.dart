@@ -7,14 +7,12 @@ class _ProductItem {
   final String name;
   final String price; // Formatted string for display
   final String imageUrl;
-  final bool isPromo;
 
   _ProductItem({
     required this.id,
     required this.name,
     required this.price,
     required this.imageUrl,
-    this.isPromo = false,
   });
 }
 
@@ -40,7 +38,6 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
       name: 'Heavy Duty Racking System',
       price: 'Rp 8.200.000',
       imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAp_NbpYwTwhIdEstLuIBtzmPhA9NUHcr-z9KBHxkmuewOWe8WJVj5j0-87jsP0e6XR6wwPn_66JDLX_huuNITxGsnV1QjWaUgdYB1JgHXpxhEVo0UjSZtKH9uiqLL690RURHGGM_5WzgggE9LL5OXD-AR_ELGYvjfL5tWxvLyTcDhP-4rLZYVTehMus7RW1M-sdYwuPw2mY8HkrCoIuWfIZx_wAxjAhXhUMW6EY1WutGGUqI8wTjY_YukVKVAZiKB0j-xETAwVq9g',
-      isPromo: true,
     ),
     _ProductItem(
       id: '3',
@@ -67,6 +64,7 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
       imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6v6Bd8nYsgT9WPhfYZNFSOyllgCE6mTh0QjGlyUpyEeEgZNc7pgj7ckrFp32LY4-hrB-ueJjtHhlTuE_4u9--mwlSlV1HCj3lMz2ukm2tAWrsOm_f8ZXhJ07-xBGKgeKa08HQv26eJRCTDgtEx6ACiwGhVbT04ly3wIsRG84OEOFgch4Ur0oRNmrBhH4aGCyUGxDVELca7CQcxvpZyfi4cVwHxOL669vRbP-6QYeIlGFFii9gmCutzY2CslSq4gJUehGGiuil2II',
     ),
   ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -221,15 +219,6 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
                   product.imageUrl,
                   fit: BoxFit.cover,
                 ),
-                if (product.isPromo)
-                 Positioned(
-                   top: 8, right: 8,
-                   child: Container(
-                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                     decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)),
-                     child: const Text('PROMO', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                   ),
-                 )
               ],
             ),
           ),

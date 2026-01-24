@@ -253,46 +253,50 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                     const SizedBox(height: 16),
                     
                     // Proof of Delivery Section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: surfaceColor,
-                        borderRadius: BorderRadius.circular(16),
-                         border: Border.all(color: borderColor),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.image, color: AppColors.primary, size: 20),
-                                    const SizedBox(width: 8),
-                                    Text('Proof of Delivery', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Text('Status', style: TextStyle(fontSize: 12, color: subTextColor)),
-                                Text('Pending Delivery', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
-                                const SizedBox(height: 4),
-                                Text('Photo will appear here upon arrival', style: TextStyle(fontSize: 12, color: isDarkMode ? const Color(0xFF587a81) : AppColors.textGray)),
-                              ],
+                    // Proof of Delivery Section
+                    if (_steps.any((s) => s.title == 'Delivered' && s.isCompleted)) ...[
+                       Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: surfaceColor,
+                          borderRadius: BorderRadius.circular(16),
+                           border: Border.all(color: borderColor),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.image, color: AppColors.primary, size: 20),
+                                      const SizedBox(width: 8),
+                                      Text('Proof of Delivery', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text('Status', style: TextStyle(fontSize: 12, color: subTextColor)),
+                                  Text('Delivered', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: 80, height: 80,
-                            decoration: BoxDecoration(
-                               color: isDarkMode ? const Color(0xFF111f22) : Colors.grey.shade100,
-                               borderRadius: BorderRadius.circular(8),
-                               border: Border.all(color: isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade300, style: BorderStyle.none), // dashed border hard in standard flutter without packages 
-                            ),
-                            child: const Icon(Icons.photo_camera, color: Colors.grey, size: 32),
-                          )
-                        ],
+                            Container(
+                              width: 80, height: 80,
+                              decoration: BoxDecoration(
+                                 color: isDarkMode ? const Color(0xFF111f22) : Colors.grey.shade100,
+                                 borderRadius: BorderRadius.circular(8),
+                                 border: Border.all(color: isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade300, style: BorderStyle.none), 
+                                 image: const DecorationImage(
+                                    image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDxtFKzec-nGXMw0-8_9fDaOaThmpDrE2HveRt85-YLnAEcjt09YlOr0a8-Zhkb8yDqCaxjtC-ngR7SjsRT1ld0WDVUulzk6906LXTR1P6Ii3C0XBaHdR4uoEghokE2ywa-WnJr7urL7uC22dR3XQc_c816Mi3QCvtC6gFn_jWemdK1mWgMXxxTWKvlJ9pFMSLOy1LRCPhWXfL7CB8VdJJe9JRDat93dpHf7EbJs_zNS_mUmIMsXqO3cVtwRqP5lMnxefTcbrzx0-Q'),
+                                    fit: BoxFit.cover,
+                                 )
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                     
                     const SizedBox(height: 80), // Bottom padding
                   ],
@@ -403,13 +407,7 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                                  crossAxisAlignment: CrossAxisAlignment.start,
                                  children: [
                                    Text('Budi Santoso', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
-                                   Row(
-                                     children: [
-                                        const Icon(Icons.star, size: 14, color: AppColors.textGray),
-                                        const SizedBox(width: 2),
-                                        Text('4.9 • Courier', style: TextStyle(fontSize: 12, color: subTextColor)),
-                                     ],
-                                   )
+                                   Text('Courier', style: TextStyle(fontSize: 12, color: subTextColor)),
                                  ],
                                ),
                              ),

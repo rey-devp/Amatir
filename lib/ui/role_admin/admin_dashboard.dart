@@ -36,26 +36,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             toolbarHeight: 70,
             title: Row(
               children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: 40, height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.primary.withOpacity(0.5), width: 2),
-                        image: const DecorationImage(
-                          image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAmDJErD5lzPtMFDGHsigaJnZ8LXs5nPhNaMDPH-pzkfVWm6NOiq_4DDT92oDAfIs2bR8Zd-IFW09R84SJdwsBXsP5AKpq6J0gK4K_-CXD1amDJfDFcD3qWk1_BVWqIDFVwh7Obg1pW-wohQduIpSZLARGnxxWhI8wRq_bJK-PD9D515nu09UAlI0p3v8yim9w4FCUhK-0pU7dZIGSrug-1ub2So5SYz5KhFBPDuOb8oBiN04vu0jG-7gynxTY--q73x8JDfStie6A'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const Positioned(
-                      bottom: 0, right: 0,
-                      child: CircleAvatar(radius: 6, backgroundColor: Colors.black, child: CircleAvatar(radius: 4, backgroundColor: Colors.green)),
-                    )
-                  ],
-                ),
-                const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
