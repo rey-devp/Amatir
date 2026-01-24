@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LogiTrack Splash Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom spinner animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Subtle pulse for the logo */
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(0.98); }
+        }
+        .logo-animate {
+            animation: pulse-subtle 3s ease-in-out infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display h-screen w-full overflow-hidden selection:bg-primary selection:text-white">
+<div class="relative h-full w-full flex flex-col justify-between items-center py-12 px-6">
+<!-- Abstract background pattern: Subtle map overlay -->
+<div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0" data-alt="abstract world map pattern background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5ZlqbPgJB-F0u4OO5XC38dy-kqJAWwXJjJBFc5TxRbqXUUzxIIvkwV6Pu7fI-8Rbjs50Djf4_BvxaGBwhmPEZ1Z6s74Gu41ZOexPlmiNqXCQTe903JivMwDctaCphR8-g9PAgjRZbpitLyInWC0hRYJ2KKmIMUs_rWcRztgKMkc9PjXlw5MFv1tqv3K3qiCPlFm6F8bpf-6YO_AW2kUOB-s_2kHwGdGl-zFBft-Z1LEhS99AEN5dIYtc016ZG8SrO6B7OzFjHhbI');">
+</div>
+<!-- Top spacer for balance -->
+<div class="flex-1"></div>
+<!-- Central Content: Logo & Loader -->
+<div class="relative z-10 flex flex-col items-center justify-center gap-12 w-full max-w-xs">
+<!-- Logo Section -->
+<div class="flex flex-col items-center gap-6 logo-animate">
+<!-- Icon Container -->
+<div class="relative flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg shadow-primary/10 border border-primary/20 backdrop-blur-sm">
+<span class="material-symbols-outlined text-6xl text-primary">local_shipping</span>
+<!-- Decorative accents on icon -->
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+<div class="absolute bottom-2 left-2 w-1.5 h-1.5 bg-primary/60 rounded-full"></div>
+</div>
+<!-- Wordmark -->
+<div class="text-center">
+<h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        Logi<span class="text-primary">Track</span>
+</h1>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 tracking-wide mt-1 uppercase">
+                        Smart Logistics Solution
+                    </p>
+</div>
+</div>
+<!-- Loading Spinner -->
+<div class="flex flex-col items-center gap-4 mt-8">
+<div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full spinner"></div>
+<span class="text-xs font-medium text-slate-400 dark:text-slate-500 animate-pulse">Initializing...</span>
+</div>
+</div>
+<!-- Bottom spacer to push footer down -->
+<div class="flex-1"></div>
+<!-- Footer: Version -->
+<div class="relative z-10 pb-6 text-center">
+<p class="text-slate-400 dark:text-[#92c0c9]/60 text-xs font-normal tracking-wider">Ver 1.0.0</p>
+</div>
+</div>
+</body></html>

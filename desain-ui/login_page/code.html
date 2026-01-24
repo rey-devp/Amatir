@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LogiTrack Login</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased selection:bg-primary/30">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden">
+<!-- Header Image / Illustration Section -->
+<div class="@container w-full shrink-0">
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden min-h-[280px] relative" data-alt="Modern logistics global network map with connecting nodes" style='background-image: linear-gradient(to bottom, rgba(16, 31, 34, 0) 0%, rgba(16, 31, 34, 1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAyeCgWV4b6G4_0eXN05ZyBAdDEUweS7HKez_BcYrXtd4tyJ4tNP9fGhd2fsdHzTLrn7hYk3EX8G7vVad5WAKHCqV1_8x5DAEZgCrnNPl8_i4j4KrlkQglEOS3q8wgpcxwxxHtti_qpXgEEgOqEgORonLm4Vr5_hlw_Z4rdfocegCW8nTttJdCNfBphht6eF5hG1U7JMmJzAXYn2lFQo9ql8jEoif-z_rDx20OIr0-xQ8BA-hPUZ0-1xg-4gDiOk45u388L3H30aUE");'>
+<!-- Logo Overlay -->
+<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center p-6 bg-background-dark/30 backdrop-blur-[2px]">
+<div class="flex flex-col items-center gap-3">
+<div class="w-16 h-16 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(19,200,236,0.4)]">
+<span class="material-symbols-outlined text-background-dark text-4xl">local_shipping</span>
+</div>
+<h2 class="text-2xl font-bold tracking-tight text-white">LogiTrack</h2>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col px-6 -mt-6 relative z-10 w-full max-w-md mx-auto">
+<!-- Headline Text -->
+<div class="pb-6">
+<h1 class="text-slate-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight text-left">Selamat Datang Kembali</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal pt-2">Masuk untuk mengelola pengiriman Anda.</p>
+</div>
+<!-- Login Form -->
+<form class="flex flex-col gap-5 w-full" onsubmit="event.preventDefault();">
+<!-- Email Field -->
+<label class="flex flex-col w-full">
+<p class="text-slate-700 dark:text-slate-200 text-sm font-medium leading-normal pb-2">Email</p>
+<input autocomplete="email" class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-[#325e67] bg-white dark:bg-[#192f33] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#92c0c9] px-[15px] text-base font-normal transition-all duration-200" placeholder="user@email.com" type="email"/>
+</label>
+<!-- Password Field -->
+<label class="flex flex-col w-full">
+<div class="flex justify-between items-baseline pb-2">
+<p class="text-slate-700 dark:text-slate-200 text-sm font-medium leading-normal">Password</p>
+</div>
+<div class="flex w-full items-stretch rounded-lg relative group">
+<input autocomplete="current-password" class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-[#325e67] bg-white dark:bg-[#192f33] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#92c0c9] px-[15px] pr-12 text-base font-normal transition-all duration-200" placeholder="••••••••" type="password"/>
+<button class="absolute right-0 top-0 bottom-0 px-4 text-slate-400 dark:text-[#92c0c9] hover:text-primary transition-colors flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]">visibility</span>
+</button>
+</div>
+<div class="flex justify-end pt-2">
+<a class="text-sm font-medium text-primary hover:text-primary/80 transition-colors" href="#">Lupa Password?</a>
+</div>
+</label>
+<!-- Login Button -->
+<button class="w-full mt-4 h-14 rounded-lg bg-primary hover:bg-cyan-400 active:scale-[0.98] transition-all duration-200 flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="text-background-dark text-base font-bold tracking-wide uppercase">Login</span>
+</button>
+</form>
+<!-- Spacer to push footer down if there's extra space, or just margin -->
+<div class="flex-1 min-h-[32px]"></div>
+<!-- Footer Text -->
+<div class="pb-8 pt-4 text-center">
+<p class="text-slate-500 dark:text-slate-400 text-sm">
+                    Belum punya akun? 
+                    <a class="text-primary font-semibold hover:underline decoration-2 underline-offset-4 ml-1" href="#">Daftar sebagai Customer</a>
+</p>
+</div>
+</div>
+</div>
+</body></html>

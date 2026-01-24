@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Home - Product Catalog</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "card-dark": "#16282b", // Slightly lighter for cards
+                        "surface-dark": "#1c3236", // For inputs/bars
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-slate-900 pb-24">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-40 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
+<div class="flex items-center justify-between px-5 py-4">
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Selamat datang kembali,</span>
+<h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Halo, Budi Santoso</h2>
+</div>
+<button class="relative p-2 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-slate-700 dark:text-white" style="font-size: 26px;">shopping_cart</span>
+<span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="px-5 pb-4">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full rounded-xl border-none bg-white dark:bg-surface-dark py-3.5 pl-11 pr-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 shadow-sm" placeholder="Cari barang logistik..." type="text"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="px-5 pt-6">
+<!-- Section Title -->
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Katalog Produk</h3>
+<a class="text-sm font-medium text-primary hover:text-primary/80" href="#">Lihat Semua</a>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Card 1 -->
+<div class="group flex flex-col bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-transparent dark:border-white/5">
+<div class="relative aspect-square w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Yellow industrial forklift in a warehouse" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCyLWpw8svjLbLxJBp6PzlUZuxf36QWYL3hv2tAc8mUbCzDBI0lxCWXHGr87597_orMa7o-q4aOAwT2FuH-hwRB8_7Vn6t42EPT0N7kAP7xSPHlrQhw-8WjwqJ-KOrIFPmN5jnbhsDWCVCzhXil8QAGGCRy4kwdwImVBB664CBbbNfqN-UOw3O7DB7QTerfFGGyHFBYLX5ddMkg6HlORyecRHZl3YW97WHPgt3wP55ybFsgDy2WV459m3CwZ38YEKGes9szevZtrCQ');"></div>
+</div>
+<div class="flex flex-col flex-1 p-3">
+<h4 class="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 min-h-[2.5em]">Forklift Diesel 3 Ton</h4>
+<div class="mt-auto pt-3">
+<p class="text-base font-bold text-primary">Rp 155.000.000</p>
+<button class="mt-3 w-full bg-slate-100 dark:bg-white/10 hover:bg-primary hover:text-slate-900 dark:hover:bg-primary dark:hover:text-slate-900 text-slate-900 dark:text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+<span>Beli</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group flex flex-col bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-transparent dark:border-white/5">
+<div class="relative aspect-square w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Warehouse shelves filled with cardboard boxes" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAp_NbpYwTwhIdEstLuIBtzmPhA9NUHcr-z9KBHxkmuewOWe8WJVj5j0-87jsP0e6XR6wwPn_66JDLX_huuNITxGsnV1QjWaUgdYB1JgHXpxhEVo0UjSZtKH9uiqLL690RURHGGM_5WzgggE9LL5OXD-AR_ELGYvjfL5tWxvLyTcDhP-4rLZYVTehMus7RW1M-sdYwuPw2mY8HkrCoIuWfIZx_wAxjAhXhUMW6EY1WutGGUqI8wTjY_YukVKVAZiKB0j-xETAwVq9g');"></div>
+<div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">PROMO</div>
+</div>
+<div class="flex flex-col flex-1 p-3">
+<h4 class="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 min-h-[2.5em]">Heavy Duty Racking System</h4>
+<div class="mt-auto pt-3">
+<p class="text-base font-bold text-primary">Rp 8.200.000</p>
+<button class="mt-3 w-full bg-slate-100 dark:bg-white/10 hover:bg-primary hover:text-slate-900 dark:hover:bg-primary dark:hover:text-slate-900 text-slate-900 dark:text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+<span>Beli</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group flex flex-col bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-transparent dark:border-white/5">
+<div class="relative aspect-square w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Industrial conveyor belt system metal rollers" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4-KGqJ-dFzQVoZ1JM8RnXqdbumhJRkoqVgjnaTotIeyUCM5rSL4ToGYNtqlcm5d4783jEpKBvyH6gzovbEfFTr3XtYvMaeyjmCRK-pKNHqL93yA5yfSECYWU7YabaXshz-JBWTB6SCaNcMtz0YqGyyB6ub_BNZPFKMDeAToGX711Ia8yqxIxbQ9xmBO-chTgyxCDGDGDmjaYNgJO2kdCLxPHarsZwFExvyi_fWvZZfsXh1YaQsrPOcJSQsqcl11lcebKodSm42Ac');"></div>
+</div>
+<div class="flex flex-col flex-1 p-3">
+<h4 class="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 min-h-[2.5em]">Conveyor Belt System</h4>
+<div class="mt-auto pt-3">
+<p class="text-base font-bold text-primary">Rp 25.000.000</p>
+<button class="mt-3 w-full bg-slate-100 dark:bg-white/10 hover:bg-primary hover:text-slate-900 dark:hover:bg-primary dark:hover:text-slate-900 text-slate-900 dark:text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+<span>Beli</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group flex flex-col bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-transparent dark:border-white/5">
+<div class="relative aspect-square w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Handheld barcode scanner device on table" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDxtFKzec-nGXMw0-8_9fDaOaThmpDrE2HveRt85-YLnAEcjt09YlOr0a8-Zhkb8yDqCaxjtC-ngR7SjsRT1ld0WDVUulzk6906LXTR1P6Ii3C0XBaHdR4uoEghokE2ywa-WnJr7urL7uC22dR3XQc_c816Mi3QCvtC6gFn_jWemdK1mWgMXxxTWKvlJ9pFMSLOy1LRCPhWXfL7CB8VdJJe9JRDat93dpHf7EbJs_zNS_mUmIMsXqO3cVtwRqP5lMnxefTcbrzx0-Q');"></div>
+</div>
+<div class="flex flex-col flex-1 p-3">
+<h4 class="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 min-h-[2.5em]">Wireless Warehouse Scanner</h4>
+<div class="mt-auto pt-3">
+<p class="text-base font-bold text-primary">Rp 3.500.000</p>
+<button class="mt-3 w-full bg-slate-100 dark:bg-white/10 hover:bg-primary hover:text-slate-900 dark:hover:bg-primary dark:hover:text-slate-900 text-slate-900 dark:text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+<span>Beli</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group flex flex-col bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-transparent dark:border-white/5">
+<div class="relative aspect-square w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Stacked wooden pallets in logistics yard" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4TVFGko9T1uW0NxE6cVhJ-a3lDA2cdtSkXMeKUGoA8JdtBOYN__PVarw8Y11OXvM2WKMZmCEfmad9MRzotAyelvCbTOWZhUKrOI-ikZtBCJwhgoSLLt_FD6Q5stDHbPrsBd8vvvThUhKptQIUixHYnhSp7OdHIGWIWijguzJvSZlWEKkTAmrZUHhwXp9XQIIwADhmzXRBlNU3j2EZX5pjgHb-oQYUyiOxwZcZujaSTsHqcgEWBx19SlbndTq_H1RYOYtw8hbXaZs');"></div>
+</div>
+<div class="flex flex-col flex-1 p-3">
+<h4 class="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 min-h-[2.5em]">Euro Pallet (Kayu Standar)</h4>
+<div class="mt-auto pt-3">
+<p class="text-base font-bold text-primary">Rp 150.000</p>
+<button class="mt-3 w-full bg-slate-100 dark:bg-white/10 hover:bg-primary hover:text-slate-900 dark:hover:bg-primary dark:hover:text-slate-900 text-slate-900 dark:text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+<span>Beli</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group flex flex-col bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-transparent dark:border-white/5">
+<div class="relative aspect-square w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Industrial blue hydraulic pallet jack" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC6v6Bd8nYsgT9WPhfYZNFSOyllgCE6mTh0QjGlyUpyEeEgZNc7pgj7ckrFp32LY4-hrB-ueJjtHhlTuE_4u9--mwlSlV1HCj3lMz2ukm2tAWrsOm_f8ZXhJ07-xBGKgeKa08HQv26eJRCTDgtEx6ACiwGhVbT04ly3wIsRG84OEOFgch4Ur0oRNmrBhH4aGCyUGxDVELca7CQcxvpZyfi4cVwHxOL669vRbP-6QYeIlGFFii9gmCutzY2CslSq4gJUehGGiuil2II');"></div>
+</div>
+<div class="flex flex-col flex-1 p-3">
+<h4 class="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 min-h-[2.5em]">Pallet Jack Hydraulic</h4>
+<div class="mt-auto pt-3">
+<p class="text-base font-bold text-primary">Rp 4.500.000</p>
+<button class="mt-3 w-full bg-slate-100 dark:bg-white/10 hover:bg-primary hover:text-slate-900 dark:hover:bg-primary dark:hover:text-slate-900 text-slate-900 dark:text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+<span>Beli</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-white/10 pb-5 pt-2 px-6 safe-area-pb">
+<div class="flex justify-between items-center">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center gap-1 group w-16" href="#">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1, 'wght' 400;">home</span>
+</div>
+<span class="text-[10px] font-medium text-primary">Home</span>
+</a>
+<!-- Orders -->
+<a class="flex flex-col items-center gap-1 group w-16" href="#">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">assignment</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">Pesanan</span>
+</a>
+<!-- Tracking -->
+<a class="flex flex-col items-center gap-1 group w-16" href="#">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">local_shipping</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">Lacak</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center gap-1 group w-16" href="#">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">person</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">Profil</span>
+</a>
+</div>
+</nav>
+</body></html>
