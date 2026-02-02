@@ -24,7 +24,6 @@ class AuthProvider with ChangeNotifier {
       setLoading(true);
       _errorMessage = null;
 
-      // KARENA AuthService SUDAH RETURN UserModel, KITA LANGSUNG PAKAI SAJA
       UserModel loggedInUser = await _authService.signIn(email, password);
       
       _user = loggedInUser; // Simpan ke state provider

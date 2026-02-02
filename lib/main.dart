@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
-import 'ui/role_warehouse/dashboard_warehouse.dart';
-import 'ui/role_warehouse/update_package_location.dart';
-import 'ui/role_courier/dashboard_courier.dart';
-import 'ui/role_courier/delivery_execution_page.dart';
-import 'ui/role_customer/home_customer_page.dart';
-import 'ui/role_customer/order_detail_customer.dart';
-import 'ui/role_admin/admin_dashboard.dart';
-import 'ui/role_admin/user_list_page.dart';
-import 'config/app_constants.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 
-void main() {
+// Import Config
+import 'config/theme.dart';
+import 'config/routes.dart';
+import 'config/app_constants.dart';
+// Note: Jika file firebase_options.dart belum ada, jalankan 'flutterfire configure'
+import 'firebase_options.dart'; 
+
+// Import Providers
+import 'providers/auth_provider.dart';
+import 'providers/order_provider.dart';
+import 'providers/product_provider.dart';
+
+void main() async {
+  // 1. Inisialisasi Wajib untuk Flutter & Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -18,14 +29,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'LogiTrack',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-        useMaterial3: true,
+    // 2. MultiProvider: Menyuntikkan semua Logic ke Aplikasi
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
+      ],
+      child: MaterialApp(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        
+        // 3. Gunakan Tema yang sudah kita buat
+        theme: AppTheme.lightTheme,
+        
+        // 4. Gunakan Rute yang sudah kita buat
+        initialRoute: AppRoutes.splash, // Mulai dari Splash Screen
+        routes: AppRoutes.routes,
       ),
-      home: const UserListPage(),
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 import '../models/order_model.dart';
 import '../models/product_model.dart';
-import '../models/user_model.dart'; // Pastikan import user model ada
+import '../models/user_model.dart'; 
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -13,7 +13,7 @@ class FirestoreService {
   CollectionReference get _productsRef => _db.collection('products');
   CollectionReference get _usersRef => _db.collection('users');
 
-  // ================= USERS =================
+  // USERS 
   Future<UserModel> getUser(String uid) async {
     DocumentSnapshot doc = await _usersRef.doc(uid).get();
     if (doc.exists) {
@@ -23,16 +23,15 @@ class FirestoreService {
     }
   }
 
-  // ================= PRODUCTS =================
+  //PRODUCTS 
   Stream<List<ProductModel>> getProducts() {
     return _productsRef.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => ProductModel.fromMap(doc.data() as Map<String, dynamic>))
         .toList());
   }
 
-  // ================= ORDERS =================
-
-  // 1. CUSTOMER MEMBUAT ORDER
+  //  ORDERS
+  // CUSTOMER MEMBUAT ORDER
   Future<void> createOrder({
     required String uid,
     required ProductModel product,
@@ -62,7 +61,7 @@ class FirestoreService {
     await _ordersRef.doc(orderId).set(newOrder.toMap());
   }
 
-  // 2. UPDATE STATUS DENGAN TRANSACTION (GABUNGAN HISTORY)
+  // UPDATE STATUS DENGAN TRANSACTION (GABUNGAN HISTORY)
   Future<void> updateOrderStatusWithHistory(
       String orderId, String newStatus, String location, String description, String updatedBy) async {
     final docRef = _ordersRef.doc(orderId);
@@ -91,7 +90,7 @@ class FirestoreService {
     });
   }
 
-  // 3. GET ORDERS BY CUSTOMER
+  // GET ORDERS BY CUSTOMER
   Stream<List<OrderModel>> getOrdersByCustomer(String uid) {
     return _ordersRef
         .where('customerId', isEqualTo: uid) // Pastikan field di firebase 'customerId'
@@ -102,7 +101,7 @@ class FirestoreService {
             .toList());
   }
 
-  // 4. GET ORDERS BY STATUS (Untuk Kurir/Gudang)
+  // GET ORDERS BY STATUS (Untuk Kurir/Gudang)
   Stream<List<OrderModel>> getOrdersByStatus(String status) {
     return _ordersRef
         .where('status', isEqualTo: status)
@@ -112,7 +111,7 @@ class FirestoreService {
             .toList());
   }
 
-  // 5. GET ALL ORDERS (Untuk Admin)
+  //  GET ALL ORDERS (Untuk Admin)
   Stream<List<OrderModel>> getAllOrders() {
     return _ordersRef.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))

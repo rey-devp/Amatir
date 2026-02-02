@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1041916996900",
+    "project_id": "logitrackapp-6a4be",
+    "storage_bucket": "logitrackapp-6a4be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041916996900:android:7d12affdd89740c10517b1",
+        "android_client_info": {
+          "package_name": "com.example.amatir"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3A0my1YMFS1qyYaBpxn0oy_IEGgGjgA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041916996900:android:ff2b65d818893b3e0517b1",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3A0my1YMFS1qyYaBpxn0oy_IEGgGjgA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
