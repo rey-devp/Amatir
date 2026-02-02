@@ -1,21 +1,29 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 import '../models/order_model.dart';
 import '../models/product_model.dart';
-import '../utils/constants.dart'; // Pastikan path ini benar
+import '../models/user_model.dart'; // Pastikan import user model ada
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final Uuid _uuid = const Uuid();
 
-  // collection references (biar rapi)
+  // collection references
   CollectionReference get _ordersRef => _db.collection('orders');
   CollectionReference get _productsRef => _db.collection('products');
+  CollectionReference get _usersRef => _db.collection('users');
+
+  // ================= USERS =================
+  Future<UserModel> getUser(String uid) async {
+    DocumentSnapshot doc = await _usersRef.doc(uid).get();
+    if (doc.exists) {
+      return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+    } else {
+      throw Exception('User tidak ditemukan');
+    }
+  }
 
   // ================= PRODUCTS =================
-  
-  // Ambil data produk (Stream)
   Stream<List<ProductModel>> getProducts() {
     return _productsRef.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => ProductModel.fromMap(doc.data() as Map<String, dynamic>))
@@ -31,19 +39,16 @@ class FirestoreService {
     required String destination,
   }) async {
     String orderId = _uuid.v4();
-    // Buat tracking ID (Resi) simpel, misal: TRX-12345678
     String trackingId = "TRX-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}";
 
-    // Item History Pertama
     TrackingHistory firstHistory = TrackingHistory(
       status: 'created',
       description: 'Pesanan berhasil dibuat',
       location: 'Online System',
       timestamp: DateTime.now().toString(),
-      updatedBy: uid, // Customer ID
+      updatedBy: uid,
     );
 
-    // Buat Object OrderModel
     OrderModel newOrder = OrderModel(
       orderId: orderId,
       trackingId: trackingId,
@@ -51,50 +56,63 @@ class FirestoreService {
       customerId: uid,
       productName: product.name,
       destination: destination,
-      trackingHistory: [firstHistory], // List berisi 1 item
+      trackingHistory: [firstHistory],
     );
 
-    // Simpan ke Firestore
     await _ordersRef.doc(orderId).set(newOrder.toMap());
   }
 
-  // 2. GUDANG / KURIR UPDATE STATUS (Tracking)
-  Future<void> updateTracking({
-    required String orderId,
-    required String newStatus,
-    required String description,
-    required String location,
-    required String updatedBy, // Nama/ID orang yg update
-  }) async {
-    
-    // Buat object TrackingHistory baru
-    TrackingHistory newHistory = TrackingHistory(
-      status: newStatus,
-      description: description,
-      location: location,
-      timestamp: DateTime.now().toString(),
-      updatedBy: updatedBy,
-    );
+  // 2. UPDATE STATUS DENGAN TRANSACTION (GABUNGAN HISTORY)
+  Future<void> updateOrderStatusWithHistory(
+      String orderId, String newStatus, String location, String description, String updatedBy) async {
+    final docRef = _ordersRef.doc(orderId);
 
-    // Update status utama DAN tambahkan history baru ke array
-    await _ordersRef.doc(orderId).update({
-      'status': newStatus,
-      // ArrayUnion: Menambah item ke list tanpa menghapus yg lama
-      'tracking_history': FieldValue.arrayUnion([newHistory.toMap()]),
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+      if (!snapshot.exists) throw Exception("Order not found!");
+
+      List<dynamic> currentHistory = snapshot.data()?['trackingHistory'] ?? [];
+      
+      // Tambah history baru
+      currentHistory.add({
+        'status': newStatus,
+        'description': description,
+        'location': location,
+        'timestamp': DateTime.now().toIso8601String(),
+        'updatedBy': updatedBy,
+      });
+
+      transaction.update(docRef, {
+        'status': newStatus,
+        'trackingHistory': currentHistory,
+        'currentLocation': location, 
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
     });
   }
 
-  // 3. GET ORDERS BY CUSTOMER (Untuk Halaman "Pesanan Saya")
+  // 3. GET ORDERS BY CUSTOMER
   Stream<List<OrderModel>> getOrdersByCustomer(String uid) {
     return _ordersRef
-        .where('customer_id', isEqualTo: uid)
+        .where('customerId', isEqualTo: uid) // Pastikan field di firebase 'customerId'
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
             .toList());
   }
 
-  // 4. GET ALL ORDERS (Untuk Admin & Gudang)
+  // 4. GET ORDERS BY STATUS (Untuk Kurir/Gudang)
+  Stream<List<OrderModel>> getOrdersByStatus(String status) {
+    return _ordersRef
+        .where('status', isEqualTo: status)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
+            .toList());
+  }
+
+  // 5. GET ALL ORDERS (Untuk Admin)
   Stream<List<OrderModel>> getAllOrders() {
     return _ordersRef.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
