@@ -10,10 +10,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Key untuk validasi form
   final _formKey = GlobalKey<FormState>();
-  
-  // Controller untuk mengambil teks input
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,13 +24,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _handleRegister() async {
-    // 1. Cek Validasi (Apakah semua kolom sudah diisi?)
     if (_formKey.currentState!.validate()) {
-      
-      // 2. Panggil Provider untuk Register ke Firebase
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      
-      bool success = await authProvider.register(
+
+      // FIX: Menampung hasil Map, bukan bool
+      final result = await authProvider.register(
         _emailController.text.trim(),
         _passwordController.text.trim(),
         _nameController.text.trim(),
@@ -41,10 +36,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (!mounted) return;
 
-      // 3. Cek Hasil
-      if (success) {
-        // Berhasil: Kembali ke Login dan kasih pesan
-        Navigator.pop(context); 
+      // FIX: Cek error dari Map (result['error'])
+      if (result['error'] == null) {
+        // SUKSES
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Registrasi Berhasil! Silakan Login."),
@@ -52,10 +47,10 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         );
       } else {
-        // Gagal: Tampilkan Error
+        // GAGAL
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.errorMessage ?? "Gagal mendaftar"),
+            content: Text(result['error']), // Ambil pesan error dari Map
             backgroundColor: Colors.red,
           ),
         );
@@ -65,7 +60,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Dengarkan state dari AuthProvider (untuk loading)
     final isLoading = context.select((AuthProvider p) => p.isLoading);
 
     return Scaffold(
@@ -79,8 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               const Icon(Icons.person_add, size: 80, color: Colors.blue),
               const SizedBox(height: 24),
-              
-              // Input Nama
+
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
@@ -88,11 +81,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
-                validator: (value) => value!.isEmpty ? "Nama wajib diisi" : null,
+                validator: (value) =>
+                    value!.isEmpty ? "Nama wajib diisi" : null,
               ),
               const SizedBox(height: 16),
 
-              // Input Email
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -102,14 +95,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return "Email wajib diisi";
+                  if (value == null || value.isEmpty)
+                    return "Email wajib diisi";
                   if (!value.contains("@")) return "Format email salah";
                   return null;
                 },
               ),
               const SizedBox(height: 16),
 
-              // Input Password
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
@@ -118,13 +111,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
                 ),
-                validator: (value) => value!.length < 6 ? "Password minimal 6 karakter" : null,
+                validator: (value) =>
+                    value!.length < 6 ? "Password minimal 6 karakter" : null,
               ),
               const SizedBox(height: 32),
 
-              // Tombol Daftar
               ElevatedButton(
-                onPressed: isLoading ? null : _handleRegister, // Tombol mati jika loading
+                onPressed: isLoading ? null : _handleRegister,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.blue,
@@ -132,7 +125,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("DAFTAR SEKARANG", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    : const Text(
+                        "DAFTAR SEKARANG",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ],
           ),

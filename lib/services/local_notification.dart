@@ -1,9 +1,8 @@
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotificationService {
-  // Singleton Pattern
-  static final LocalNotificationService _instance = LocalNotificationService._internal();
+  static final LocalNotificationService _instance =
+      LocalNotificationService._internal();
   factory LocalNotificationService() => _instance;
   LocalNotificationService._internal();
 
@@ -11,35 +10,31 @@ class LocalNotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    // Setup Android 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Setup iOS
     const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-      requestSoundPermission: true,
-      requestBadgePermission: true,
-      requestAlertPermission: true,
-    );
+          requestSoundPermission: true,
+          requestBadgePermission: true,
+          requestAlertPermission: true,
+        );
 
-    // Gabungkan Setting
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+        );
 
-    // Inisialisasi Plugin
+    // FIX: Menggunakan named parameter (titik dua :)
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Aksi jika notifikasi diklik (Bisa diarahkan ke halaman detail)
-        print("Notifikasi diklik: ${response.payload}");
+        // print("Notifikasi diklik: ${response.payload}");
       },
     );
   }
 
-  // Fungsi untuk memunculkan Notifikasi
   Future<void> showNotification({
     required int id,
     required String title,
@@ -48,17 +43,19 @@ class LocalNotificationService {
   }) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'logitrack_channel', // Id Channel
-      'LogiTrack Notifications', // Nama Channel
-      channelDescription: 'Notifikasi status pengiriman paket',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
+          'logitrack_channel',
+          'LogiTrack Notifications',
+          channelDescription: 'Notifikasi status pengiriman paket',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+        );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
     );
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-
+    // FIX: Menggunakan named parameter untuk id, title, body, dll
     await flutterLocalNotificationsPlugin.show(
       id,
       title,

@@ -32,6 +32,7 @@ dependencies:
   uuid: ^4.3.3
   timeline_tile: ^2.0.0
   flutter_local_notifications: ^20.0.0
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:

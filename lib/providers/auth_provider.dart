@@ -4,66 +4,93 @@ import '../services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
-  
+
   UserModel? _user;
   UserModel? get user => _user;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
   void setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
   }
 
-  Future<bool> signIn(String email, String password) async {
+  // LOGIN
+  Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       setLoading(true);
-      _errorMessage = null;
-
       UserModel loggedInUser = await _authService.signIn(email, password);
-      
-      _user = loggedInUser; // Simpan ke state provider
-      
+      _user = loggedInUser;
       setLoading(false);
-      return true; // Login Sukses
+
+      return {"message": "Login Berhasil", "data": loggedInUser, "error": null};
     } catch (e) {
       setLoading(false);
-      _errorMessage = e.toString();
-      notifyListeners();
-      return false; // Login Gagal
+      return {
+        "message": "Login Gagal",
+        "data": null,
+        "error": e.toString().replaceAll("Exception: ", ""),
+      };
     }
   }
 
-  Future<bool> register(String email, String password, String name) async {
+  // REGISTER (Ini yang tadi hilang)
+  Future<Map<String, dynamic>> register(
+    String email,
+    String password,
+    String name,
+  ) async {
     try {
       setLoading(true);
-      _errorMessage = null;
-
+      // Panggil Service
       UserModel registeredUser = await _authService.register(
-        email: email, 
-        password: password, 
-        name: name
+        email: email,
+        password: password,
+        name: name,
       );
 
       _user = registeredUser;
-      
       setLoading(false);
-      return true;
+
+      return {
+        "message": "Registrasi Berhasil",
+        "data": registeredUser,
+        "error": null,
+      };
     } catch (e) {
       setLoading(false);
-      _errorMessage = e.toString();
-      notifyListeners();
-      return false;
+      return {
+        "message": "Registrasi Gagal",
+        "data": null,
+        "error": e.toString().replaceAll("Exception: ", ""),
+      };
     }
   }
 
-  Future<void> logout() async {
-    await _authService.signOut();
-    _user = null;
-    notifyListeners();
+  // LOGOUT
+  Future<Map<String, dynamic>> logout() async {
+    try {
+      await _authService.signOut();
+      _user = null;
+      notifyListeners();
+
+      return {"message": "Logout Berhasil", "data": null, "error": null};
+    } catch (e) {
+      return {"message": "Logout Gagal", "data": null, "error": e.toString()};
+    }
+  }
+
+  // GET CURRENT USER
+  Future<UserModel?> getCurrentUser() async {
+    final currentUser = _authService.currentUser;
+    if (currentUser != null) {
+      try {
+        return _user;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 }
