@@ -26,9 +26,8 @@ class LocalNotificationService {
           iOS: initializationSettingsDarwin,
         );
 
-    // FIX: Menggunakan named parameter (titik dua :)
     await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
+      settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         // print("Notifikasi diklik: ${response.payload}");
       },
@@ -55,12 +54,11 @@ class LocalNotificationService {
       android: androidPlatformChannelSpecifics,
     );
 
-    // FIX: Menggunakan named parameter untuk id, title, body, dll
     await flutterLocalNotificationsPlugin.show(
-      id,
-      title,
-      body,
-      platformChannelSpecifics,
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: platformChannelSpecifics,
       payload: payload,
     );
   }

@@ -5,16 +5,13 @@ import '../services/firestore_service.dart';
 
 class ProductProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
-  
-  // Data Produk
+
   List<ProductModel> _products = [];
   List<ProductModel> get products => _products;
 
-  // Status Loading
-  bool _isLoading = true; 
+  bool _isLoading = true;
   bool get isLoading => _isLoading;
 
-  // Stream Subscription
   StreamSubscription<List<ProductModel>>? _productSubscription;
 
   ProductProvider() {
@@ -33,7 +30,9 @@ class ProductProvider extends ChangeNotifier {
           notifyListeners();
         },
         onError: (error) {
-          print("Error fetching products: $error");
+          debugPrint(
+            "Error fetching products: $error",
+          ); // Ganti print jadi debugPrint
           _isLoading = false;
           notifyListeners();
         },
@@ -44,7 +43,6 @@ class ProductProvider extends ChangeNotifier {
     }
   }
 
-  // Filter Produk
   List<ProductModel> searchProducts(String query) {
     if (query.isEmpty) return _products;
     return _products.where((product) {

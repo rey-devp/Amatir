@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import '../models/order_model.dart';
 import '../models/product_model.dart';
 import '../services/firestore_service.dart';
 
 class OrderProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
-  
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  // Function untuk Customer Beli Barang
-  Future<bool> createOrder(String uid, ProductModel product, String address) async {
+  Future<bool> createOrder(
+    String uid,
+    ProductModel product,
+    String address,
+  ) async {
     _isLoading = true;
     notifyListeners();
 
@@ -22,16 +24,15 @@ class OrderProvider extends ChangeNotifier {
       );
       _isLoading = false;
       notifyListeners();
-      return true; // Berhasil
+      return true;
     } catch (e) {
-      print("Error create order: $e");
+      debugPrint("Error create order: $e"); // Ganti print jadi debugPrint
       _isLoading = false;
       notifyListeners();
-      return false; // Gagal
+      return false;
     }
   }
 
-  // Function untuk Update Status (Gudang/Kurir)
   Future<bool> updateStatus({
     required String orderId,
     required String status,
@@ -41,17 +42,17 @@ class OrderProvider extends ChangeNotifier {
   }) async {
     try {
       await _firestoreService.updateOrderStatusWithHistory(
-        orderId,      
-        status,       
-        location,     
-        description,  
-        updaterName   
+        orderId,
+        status,
+        location,
+        description,
+        updaterName,
       );
-      
+
       notifyListeners();
       return true;
     } catch (e) {
-      print("Error update status: $e");
+      debugPrint("Error update status: $e"); // Ganti print jadi debugPrint
       return false;
     }
   }
