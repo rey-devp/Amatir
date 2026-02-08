@@ -1,48 +1,88 @@
 import 'package:flutter/material.dart';
 import '../../config/app_constants.dart';
+import 'warehouse_scan_page.dart';
 
 // Local Data Model for Dashboard Items (Package List)
+// Local Data Model for Package List (Simulating API Response)
 class _DashboardItem {
   final String id;
   final String origin;
   final String status;
-  final IconData details1Icon;
   final String details1Text;
-  final IconData details2Icon;
   final String details2Text;
-  final IconData icon;
   final bool isProcessed;
+
+  // UI Helper properties (derived or fixed for now)
+  final IconData icon;
+  final IconData details1Icon;
+  final IconData details2Icon;
 
   _DashboardItem({
     required this.id,
     required this.origin,
     required this.status,
-    required this.details1Icon,
     required this.details1Text,
-    required this.details2Icon,
     required this.details2Text,
-    required this.icon,
-    this.isProcessed = false,
+    required this.isProcessed,
+    this.icon = Icons.local_shipping_outlined,
+    this.details1Icon = Icons.inventory_2_outlined,
+    this.details2Icon = Icons.schedule,
   });
+
+  factory _DashboardItem.fromMap(Map<String, dynamic> map) {
+    return _DashboardItem(
+      id: map['id'] ?? '',
+      origin: map['origin'] ?? '',
+      status: map['status'] ?? 'Pending',
+      details1Text: map['details1Text'] ?? '',
+      details2Text: map['details2Text'] ?? '',
+      isProcessed: map['isProcessed'] ?? false,
+      // Map icons based on status/type if needed
+      icon: map['isProcessed'] == true ? Icons.check_circle_outline : Icons.local_shipping_outlined,
+    );
+  }
 }
 
-// Local Data Model for Stats Cards
+// Local Data Model for Stats (Simulating API Response)
 class _StatItem {
   final String title;
   final String value;
+  final String trend;
+  // UI Helpers
   final IconData icon;
   final Color color;
-  final String trend;
   final IconData trendIcon;
 
   _StatItem({
     required this.title,
     required this.value,
+    required this.trend,
     required this.icon,
     required this.color,
-    required this.trend,
     required this.trendIcon,
   });
+
+  factory _StatItem.fromMap(Map<String, dynamic> map) {
+    // Mapping UI style based on title
+    IconData icon = Icons.help;
+    Color color = Colors.grey;
+    if (map['title'] == 'Incoming') {
+      icon = Icons.input;
+      color = AppColors.primary;
+    } else if (map['title'] == 'Outgoing') {
+      icon = Icons.output;
+      color = AppColors.purple;
+    }
+
+    return _StatItem(
+      title: map['title'] ?? '',
+      value: map['value'] ?? '0',
+      trend: map['trend'] ?? '',
+      icon: icon,
+      color: color,
+      trendIcon: map['trendIcon'] == 'up' ? Icons.trending_up : Icons.trending_flat,
+    );
+  }
 }
 
 // Local Data Model for Tabs
@@ -67,24 +107,49 @@ class DashboardWarehousePage extends StatefulWidget {
 
 class _DashboardWarehousePageState extends State<DashboardWarehousePage> {
   // Dummy Data List: Stats
-  final List<_StatItem> _statItems = [
-    _StatItem(
-      title: 'Incoming',
-      value: '142',
-      icon: Icons.input,
-      color: AppColors.primary,
-      trend: '+12%',
-      trendIcon: Icons.trending_up,
-    ),
-    _StatItem(
-      title: 'Outgoing',
-      value: '89',
-      icon: Icons.output,
-      color: AppColors.purple,
-      trend: 'On Track',
-      trendIcon: Icons.trending_flat,
-    ),
+  // MOCK RAW RESPONSE from WarehouseProvider.getDashboardStats() & getPackages()
+  final List<Map<String, dynamic>> _mockStatsResponse = [
+    {'title': 'Incoming', 'value': '142', 'trend': '+12%', 'trendIcon': 'up'},
+    {'title': 'Outgoing', 'value': '89', 'trend': 'On Track', 'trendIcon': 'flat'},
   ];
+
+  final List<Map<String, dynamic>> _mockPackagesResponse = [
+    {
+      'id': '#LOG-9921',
+      'origin': 'Shanghai',
+      'status': 'Pending',
+      'details1Text': '12 Boxes',
+      'details2Text': 'Arriving in 2h',
+      'isProcessed': false
+    },
+    {
+      'id': '#TRK-8821',
+      'origin': 'New York',
+      'status': 'Pending',
+      'details1Text': '2 Pallets',
+      'details2Text': 'Arriving in 4h',
+      'isProcessed': false
+    },
+    {
+      'id': '#LOG-3321',
+      'origin': 'Berlin',
+      'status': 'Pending',
+      'details1Text': '5 Crates',
+      'details2Text': 'Delayed',
+      'isProcessed': false
+    },
+    {
+      'id': '#LOG-1029',
+      'origin': 'Tokyo',
+      'status': 'Processed',
+      'details1Text': '',
+      'details2Text': '',
+      'isProcessed': true
+    },
+  ];
+
+  late List<_StatItem> _statItems;
+  late List<_DashboardItem> _dashboardItems;
 
   // Dummy Data List: Tabs
   final List<_TabItem> _tabItems = [
@@ -93,50 +158,12 @@ class _DashboardWarehousePageState extends State<DashboardWarehousePage> {
     _TabItem(label: 'History', count: '', isActive: false),
   ];
 
-  // Dummy Data List: Packages
-  final List<_DashboardItem> _dashboardItems = [
-    _DashboardItem(
-      id: '#LOG-9921',
-      origin: 'Shanghai',
-      status: 'Pending',
-      details1Icon: Icons.inventory_2_outlined,
-      details1Text: '12 Boxes',
-      details2Icon: Icons.schedule,
-      details2Text: 'Arriving in 2h',
-      icon: Icons.local_shipping_outlined,
-    ),
-    _DashboardItem(
-      id: '#TRK-8821',
-      origin: 'New York',
-      status: 'Pending',
-      details1Icon: Icons.layers_outlined,
-      details1Text: '2 Pallets',
-      details2Icon: Icons.schedule,
-      details2Text: 'Arriving in 4h',
-      icon: Icons.flight_land,
-    ),
-    _DashboardItem(
-      id: '#LOG-3321',
-      origin: 'Berlin',
-      status: 'Pending',
-      details1Icon: Icons.category_outlined,
-      details1Text: '5 Crates',
-      details2Icon: Icons.schedule,
-      details2Text: 'Delayed',
-      icon: Icons.local_shipping_outlined,
-    ),
-    _DashboardItem(
-      id: '#LOG-1029',
-      origin: 'Tokyo',
-      status: 'Processed',
-      details1Icon: Icons.check_circle_outline,
-      details1Text: '',
-      details2Icon: Icons.access_time,
-      details2Text: '',
-      icon: Icons.check_circle_outline,
-      isProcessed: true,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _statItems = _mockStatsResponse.map((e) => _StatItem.fromMap(e)).toList();
+    _dashboardItems = _mockPackagesResponse.map((e) => _DashboardItem.fromMap(e)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -381,7 +408,12 @@ class _DashboardWarehousePageState extends State<DashboardWarehousePage> {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const WarehouseScanPage()),
+            );
+          },
           backgroundColor: AppColors.primary,
           elevation: 4,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

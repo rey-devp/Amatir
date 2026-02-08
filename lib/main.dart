@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
+import 'ui/auth/splash_screen.dart';
+import 'ui/auth/login_page.dart';
 import 'ui/role_warehouse/dashboard_warehouse.dart';
 import 'ui/role_warehouse/update_package_location.dart';
 import 'ui/role_courier/dashboard_courier.dart';
@@ -40,7 +42,30 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         useMaterial3: true,
       ),
-      home: const UserListPage(),
+      initialRoute: '/splash',
+      routes: {
+        '/splash': (context) => const SplashScreen(),
+        '/login': (context) => const LoginPage(),
+        
+        // Admin
+        '/admin-dashboard': (context) => const AdminDashboardPage(),
+        '/admin-users': (context) => const UserListPage(),
+        
+        // Courier
+        '/courier-dashboard': (context) => const DashboardCourierPage(),
+        '/courier-delivery-execution': (context) => const DeliveryExecutionPage(),
+        
+        // Customer
+        '/customer-home': (context) => const HomeCustomerPage(),
+        // Note: OrderDetailCustomerPage might need arguments, handled via onGenerateRoute or arguments
+        // For simplicity in named routes, we can register it, but data passing needs care.
+        // Let's stick to simple routes first.
+        '/customer-order-detail': (context) => const OrderDetailCustomerPage(),
+        
+        // Warehouse
+        '/warehouse-dashboard': (context) => const DashboardWarehousePage(),
+        '/warehouse-update-location': (context) => const UpdatePackageLocationPage(),
+      },
     );
   }
 }

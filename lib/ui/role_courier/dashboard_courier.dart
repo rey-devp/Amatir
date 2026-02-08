@@ -2,34 +2,66 @@ import 'package:flutter/material.dart';
 import '../../config/app_constants.dart';
 
 // Local Data Model for Courier Tasks
+// Local Data Model matching API Contract Response for getAssignedTasks
 class _CourierTask {
   final String id;
-  final String name;
-  final String description; // e.g., "Gudang Utama A" or "Paket Regular"
-  final String status; // "In Transit", "Pending"
-  final bool isPriority;
-  final double distance; // in km
+  final String recipientName; // Contract: recipientName
   final String address;
-  final String? time; // "10:30 AM"
-  final String? paymentStatus; // "Pre-paid"
-  final IconData icon;
+  final double distance;
+  final bool isPriority;
+  final String status;
+  // Extra fields for UI (assuming Backend will provide or we derive)
+  final String description; 
+  final String? time;
+  final String? paymentStatus;
+  final IconData icon; // Derived from description/status in fromMap
   final Color iconColor;
   final Color iconBgColor;
 
   _CourierTask({
     required this.id,
-    required this.name,
-    required this.description,
-    required this.status,
-    this.isPriority = false,
-    required this.distance,
+    required this.recipientName,
     required this.address,
+    required this.distance,
+    required this.isPriority,
+    required this.status,
+    required this.description,
     this.time,
     this.paymentStatus,
     required this.icon,
     required this.iconColor,
     required this.iconBgColor,
   });
+
+  factory _CourierTask.fromMap(Map<String, dynamic> map) {
+    // Deriving UI properties
+    IconData icon = Icons.local_shipping;
+    Color iconColor = Colors.blue;
+    Color iconBgColor = Colors.blue.withOpacity(0.1);
+
+    if (map['isPriority'] == true) {
+      iconColor = Colors.red;
+      iconBgColor = Colors.red.withOpacity(0.1);
+    } 
+    
+    // Simple logic to vary icons/colors based on description/mock data
+    // In real app, this might come from 'type' field
+    
+    return _CourierTask(
+      id: map['id'] ?? '',
+      recipientName: map['recipientName'] ?? 'Unknown',
+      address: map['address'] ?? '',
+      distance: (map['distance'] as num?)?.toDouble() ?? 0.0,
+      isPriority: map['isPriority'] ?? false,
+      status: map['status'] ?? 'Pending',
+      description: map['description'] ?? 'Package Delivery', 
+      time: map['time'], // Optional in contract
+      paymentStatus: map['paymentStatus'], // Optional in contract
+      icon: icon,
+      iconColor: iconColor,
+      iconBgColor: iconBgColor,
+    );
+  }
 }
 
 class DashboardCourierPage extends StatefulWidget {
@@ -44,44 +76,47 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
   int _selectedIndex = 0;
 
   // Dummy Data
-  final List<_CourierTask> _tasks = [
-    _CourierTask(
-      id: '1',
-      name: 'Budi Santoso',
-      description: 'Delivery',
-      status: 'In Transit',
-      isPriority: true,
-      distance: 1.2,
-      address: 'Jl. Melati No. 10, RT 05/RW 02, Cilandak, Jakarta Selatan',
-      icon: Icons.local_shipping, // Using generic icon for avatar placeholder if needed
-      iconColor: Colors.blue,
-      iconBgColor: Colors.blue.withOpacity(0.1),
-    ),
-    _CourierTask(
-      id: '2',
-      name: 'PT. Logistik Jaya',
-      description: 'Gudang Utama A',
-      status: 'Pending',
-      distance: 5.4,
-      address: 'Kawasan Industri Pulogadung, Jakarta Timur',
-      time: '10:30 AM',
-      icon: Icons.warehouse,
-      iconColor: Colors.orange,
-      iconBgColor: Colors.orange.withOpacity(0.1),
-    ),
-    _CourierTask(
-      id: '3',
-      name: 'Siti Aminah',
-      description: 'Paket Regular',
-      status: 'Pending',
-      distance: 8.0,
-      address: 'Apartemen City Park, Tower B, Cengkareng',
-      paymentStatus: 'Pre-paid',
-      icon: Icons.inventory_2,
-      iconColor: Colors.purple,
-      iconBgColor: Colors.purple.withOpacity(0.1),
-    ),
+  // MOCK RAW RESPONSE from CourierProvider.getAssignedTasks()
+  final List<Map<String, dynamic>> _mockApiResponse = [
+    {
+      'id': '1',
+      'recipientName': 'Budi Santoso',
+      'description': 'Delivery',
+      'status': 'In Transit',
+      'isPriority': true,
+      'distance': 1.2,
+      'address': 'Jl. Melati No. 10, RT 05/RW 02, Cilandak, Jakarta Selatan',
+    },
+    {
+      'id': '2',
+      'recipientName': 'PT. Logistik Jaya',
+      'description': 'Gudang Utama A',
+      'status': 'Pending',
+      'isPriority': false,
+      'distance': 5.4,
+      'address': 'Kawasan Industri Pulogadung, Jakarta Timur',
+      'time': '10:30 AM',
+    },
+    {
+      'id': '3',
+      'recipientName': 'Siti Aminah',
+      'description': 'Paket Regular',
+      'status': 'Pending',
+      'isPriority': false,
+      'distance': 8.0,
+      'address': 'Apartemen City Park, Tower B, Cengkareng',
+      'paymentStatus': 'Pre-paid',
+    },
   ];
+
+  late List<_CourierTask> _tasks;
+
+  @override
+  void initState() {
+    super.initState();
+    // Simulate parsing data from Provider
+    _tasks = _mockApiResponse.map((json) => _CourierTask.fromMap(json)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -362,7 +397,7 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(task.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                Text(task.recipientName, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -402,7 +437,9 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
                      const SizedBox(width: 12),
                      Expanded(
                        child: ElevatedButton(
-                         onPressed: (){},
+                         onPressed: (){
+                           Navigator.pushNamed(context, '/courier-delivery-execution');
+                         },
                          style: ElevatedButton.styleFrom(
                            backgroundColor: AppColors.primary,
                            foregroundColor: Colors.black, // Dark text on primary button
@@ -456,7 +493,7 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(task.name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
+                      Text(task.recipientName, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
                       Text(task.description, style: TextStyle(fontSize: 12, color: subTextColor)),
                     ],
                   ),

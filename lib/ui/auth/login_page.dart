@@ -12,6 +12,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -258,8 +259,126 @@ class _LoginPageState extends State<LoginPage> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // TODO: Implement Login Logic
+                          onPressed: () async {
+                            // 1. Validasi Input
+                            if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Email dan Password harus diisi'), backgroundColor: Colors.red),
+                              );
+                              return;
+                            }
+
+                            // 2. Tampilkan Loading
+                            setState(() {
+                              // Assuming _isLoading is defined in State. If not, I will add it.
+                              // Since I cannot see _isLoading in the viewed file, I will add it to the State class 
+                              // via a separate edit or assume it's there. 
+                              // Wait, I checked the file content and _isLoading is NOT there.
+                              // I must add `bool _isLoading = false;` to the state class first.
+                            });
+                            
+                            // For now, let's implement the logic assuming _isLoading exists, 
+                            // and I will add the variable in the same file update if possible or next.
+                            // Actually, I should add the variable first to avoid errors.
+                            // But I can do it in one go if I replace the whole class or enough context.
+                            // Let's stick to the plan: Implement logic, but I'll use a local variable or just set state.
+                            
+                            // To be safe, I will implement the logic and then add the state variable.
+                            
+                            // 2. Mocking Provider Call (Since Provider might not be ready)
+                            // In a real scenario: final result = await context.read<AuthProvider>().login(...);
+                            
+                            // MOCK IMPLEMENTATION (To simulate Contract)
+                            setState(() => _isLoading = true);
+                            await Future.delayed(const Duration(seconds: 2));
+                            
+                            // Simulate Response based on Mock Logic (Matches Internal Contract Example)
+                            Map<String, dynamic> result;
+                            if (_emailController.text == "admin@test.com" && _passwordController.text == "123") {
+                               result = {
+                                "message": "Login Berhasil",
+                                "data": {
+                                  "uid": "user_001",
+                                  "name": "Admin Gudang",
+                                  "email": "admin@test.com",
+                                  "role": "admin",
+                                  "token": "mock_token_123"
+                                },
+                                "error": null
+                              };
+                            } else if (_emailController.text == "courier@test.com" && _passwordController.text == "123") {
+                               result = {
+                                "message": "Login Berhasil",
+                                "data": {
+                                  "uid": "user_002",
+                                  "name": "Kurir Express",
+                                  "email": "courier@test.com",
+                                  "role": "courier",
+                                  "token": "mock_token_456"
+                                },
+                                "error": null
+                              };
+                            } else if (_emailController.text == "warehouse@test.com" && _passwordController.text == "123") {
+                               result = {
+                                "message": "Login Berhasil",
+                                "data": {
+                                  "uid": "user_003",
+                                  "name": "Staf Gudang",
+                                  "email": "warehouse@test.com",
+                                  "role": "warehouse",
+                                  "token": "mock_token_789"
+                                },
+                                "error": null
+                              };
+                            } else if (_emailController.text == "testingcus@gmail.com" && _passwordController.text == "testing") {
+                               result = {
+                                "message": "Login Berhasil",
+                                "data": {
+                                  "uid": "user_004",
+                                  "name": "Pelanggan Setia",
+                                  "email": "testingcus@gmail.com",
+                                  "role": "customer",
+                                  "token": "mock_token_101"
+                                },
+                                "error": null
+                              };
+                            } else {
+                               result = {
+                                "message": "Login Gagal",
+                                "data": null,
+                                "error": "Email atau password salah"
+                              };
+                            }
+
+                            if (!mounted) return;
+                            setState(() => _isLoading = false);
+
+                            // 3. Cek Response Sesuai Standar
+                            if (result['error'] == null) {
+                              // SUKSES
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(result['message']), backgroundColor: Colors.green),
+                              );
+
+                              // Redirect based on Role (Contract: role is inside data)
+                              final user = result['data'];
+                              final role = user['role'];
+                              
+                              if (role == 'admin') {
+                                Navigator.pushReplacementNamed(context, '/admin-dashboard'); // Ensure route exists
+                              } else if (role == 'courier') {
+                                Navigator.pushReplacementNamed(context, '/courier-dashboard');
+                              } else if (role == 'warehouse') {
+                                Navigator.pushReplacementNamed(context, '/warehouse-dashboard');
+                              } else {
+                                Navigator.pushReplacementNamed(context, '/customer-home');
+                              }
+                            } else {
+                              // GAGAL
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(result['error']), backgroundColor: Colors.red),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
@@ -270,7 +389,12 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: const Text(
+                          child: _isLoading 
+                            ? const SizedBox(
+                                height: 24, width: 24, 
+                                child: CircularProgressIndicator(color: AppColors.backgroundDark, strokeWidth: 2)
+                              )
+                            : const Text(
                             'LOGIN',
                             style: TextStyle(
                               fontSize: 16,
