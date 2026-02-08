@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
@@ -12,14 +11,13 @@ class ProductProvider extends ChangeNotifier {
   List<ProductModel> get products => _products;
 
   // Status Loading
-  bool _isLoading = true; // Default loading true saat pertama buka
+  bool _isLoading = true; 
   bool get isLoading => _isLoading;
 
-  // Stream Subscription (Agar hemat memori)
+  // Stream Subscription
   StreamSubscription<List<ProductModel>>? _productSubscription;
 
   ProductProvider() {
-    // Otomatis ambil data saat Provider dibuat
     _listenToProducts();
   }
 
@@ -28,7 +26,6 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Mendengarkan perubahan data di Firestore secara Real-time
       _productSubscription = _firestoreService.getProducts().listen(
         (productsData) {
           _products = productsData;
@@ -57,7 +54,6 @@ class ProductProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    // Matikan stream saat provider tidak dipakai agar tidak memory leak
     _productSubscription?.cancel();
     super.dispose();
   }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../models/order_model.dart';
 import '../models/product_model.dart';
@@ -41,16 +40,18 @@ class OrderProvider extends ChangeNotifier {
     required String updaterName,
   }) async {
     try {
-      await _firestoreService.updateTracking(
-        orderId: orderId,
-        newStatus: status,
-        description: description,
-        location: location,
-        updatedBy: updaterName,
+      await _firestoreService.updateOrderStatusWithHistory(
+        orderId,      
+        status,       
+        location,     
+        description,  
+        updaterName   
       );
+      
+      notifyListeners();
       return true;
     } catch (e) {
-      print("Error update tracking: $e");
+      print("Error update status: $e");
       return false;
     }
   }

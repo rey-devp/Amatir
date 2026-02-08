@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'config/theme.dart';
 import 'config/routes.dart';
 import 'config/app_constants.dart';
-// Note: Jika file firebase_options.dart belum ada, jalankan 'flutterfire configure'
 import 'firebase_options.dart'; 
 
 // Import Providers
@@ -15,7 +14,7 @@ import 'providers/order_provider.dart';
 import 'providers/product_provider.dart';
 
 void main() async {
-  // 1. Inisialisasi Wajib untuk Flutter & Firebase
+  // Inisialisasi untuk Flutter & Firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -29,7 +28,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 2. MultiProvider: Menyuntikkan semua Logic ke Aplikasi
+    // MultiProvider: Menyuntikkan semua Logic ke Aplikasi
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),

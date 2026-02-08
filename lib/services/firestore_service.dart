@@ -13,7 +13,7 @@ class FirestoreService {
   CollectionReference get _productsRef => _db.collection('products');
   CollectionReference get _usersRef => _db.collection('users');
 
-  // USERS 
+  // ================= USERS =================
   Future<UserModel> getUser(String uid) async {
     DocumentSnapshot doc = await _usersRef.doc(uid).get();
     if (doc.exists) {
@@ -23,14 +23,15 @@ class FirestoreService {
     }
   }
 
-  //PRODUCTS 
+  // ================= PRODUCTS =================
   Stream<List<ProductModel>> getProducts() {
     return _productsRef.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => ProductModel.fromMap(doc.data() as Map<String, dynamic>))
         .toList());
   }
 
-  //  ORDERS
+  // ================= ORDERS =================
+  
   // CUSTOMER MEMBUAT ORDER
   Future<void> createOrder({
     required String uid,
@@ -70,7 +71,11 @@ class FirestoreService {
       final snapshot = await transaction.get(docRef);
       if (!snapshot.exists) throw Exception("Order not found!");
 
-      List<dynamic> currentHistory = snapshot.data()?['trackingHistory'] ?? [];
+      // PERBAIKAN UTAMA DI SINI (Casting Data)
+      final data = snapshot.data() as Map<String, dynamic>?;
+      
+      // Gunakan key 'tracking_history' sesuai format di database
+      List<dynamic> currentHistory = data?['tracking_history'] ?? [];
       
       // Tambah history baru
       currentHistory.add({
@@ -78,14 +83,14 @@ class FirestoreService {
         'description': description,
         'location': location,
         'timestamp': DateTime.now().toIso8601String(),
-        'updatedBy': updatedBy,
+        'updated_by': updatedBy, // Sesuaikan dengan key toMap
       });
 
       transaction.update(docRef, {
         'status': newStatus,
-        'trackingHistory': currentHistory,
-        'currentLocation': location, 
-        'updatedAt': FieldValue.serverTimestamp(),
+        'tracking_history': currentHistory, // Sesuaikan key
+        'current_location': location, 
+        'updated_at': FieldValue.serverTimestamp(),
       });
     });
   }
@@ -93,8 +98,8 @@ class FirestoreService {
   // GET ORDERS BY CUSTOMER
   Stream<List<OrderModel>> getOrdersByCustomer(String uid) {
     return _ordersRef
-        .where('customerId', isEqualTo: uid) // Pastikan field di firebase 'customerId'
-        .orderBy('createdAt', descending: true)
+        .where('customer_id', isEqualTo: uid) // Key di firebase biasanya snake_case
+        .orderBy('created_at', descending: true) // Pastikan key sorting benar (opsional, hapus orderBy jika error index)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
@@ -111,7 +116,7 @@ class FirestoreService {
             .toList());
   }
 
-  //  GET ALL ORDERS (Untuk Admin)
+  // GET ALL ORDERS (Untuk Admin)
   Stream<List<OrderModel>> getAllOrders() {
     return _ordersRef.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
