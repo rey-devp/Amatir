@@ -2,26 +2,34 @@ import 'package:flutter/material.dart';
 import '../../config/app_constants.dart';
 
 // Local Data Model for User
+// Local Data Model matching API Contract Response
 class _User {
+  final String uid;
   final String name;
   final String email;
-  final String role; // Admin, Courier, Warehouse, Customer
+  final String role; 
   final String? imageUrl;
-  final String? initials; // For avatar fallback
-  final Color? initialsBgColor;
-  final Color? initialsTextColor;
-  final bool isOnline; // For status indicator
+  final bool isOnline; 
 
   _User({
+    required this.uid,
     required this.name,
     required this.email,
     required this.role,
     this.imageUrl,
-    this.initials,
-    this.initialsBgColor,
-    this.initialsTextColor,
     this.isOnline = false,
   });
+
+  factory _User.fromMap(Map<String, dynamic> map) {
+    return _User(
+      uid: map['uid'] ?? '',
+      name: map['name'] ?? '',
+      email: map['email'] ?? '',
+      role: map['role'] ?? 'Customer',
+      imageUrl: map['image_url'],
+      isOnline: map['is_online'] ?? false,
+    );
+  }
 }
 
 class UserListPage extends StatefulWidget {
@@ -36,55 +44,62 @@ class _UserListPageState extends State<UserListPage> {
   int _selectedFilterIndex = 0;
   final List<String> _filters = ['All', 'Admin', 'Courier', 'Warehouse', 'Customer'];
 
-  final List<_User> _allUsers = [
-    _User(
-      name: 'Sarah Jenkins',
-      email: 'sarah.j@logitrack.com',
-      role: 'Admin',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBB2NFd-UOkhpxP6H7k5n9NdE5_KWwpEx8PH5SQRhrbqf8cV4UtY8u2yTEqNEfrUosinFifhDEMRjgHnP2BXDTd8_7A0xv6rJvYaT3GvxIIvJx6X5msYkIZ3WlxgNigxmoyj9Bv2pSyDltieZfCIYklWf7bRwmn6o5sdNYPDwUX6MwlqLQkBlYuipFJTSlRcmjDulDt0TLtSQ1uMtdwaCs_O4LtPJgyUDt-2Ge3AFg2WyYkkh5rCvF6Y1XQcIOT5qyWGQFQn5uCFbM',
-      isOnline: true,
-    ),
-    _User(
-      name: 'Mike Ross',
-      email: 'mike.ross@delivery.com',
-      role: 'Courier',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDwPjIkIlxPyXqCxs7NI0RTPErpI8oY15RTECjML9wjPTe7QlXOoj3TkvZJ1SbbEe5yr6DFegy8jEELdHsPqZ0e6jO2z11yZLb88j52-adcfMbJxUrIoq_fu9SjL2Fy668C1iLsP5j5AmPcjTyzc8tRv_gPtazl0OiMt76GF1bj-FFzVBPNwx2X9RWor6vqE1CxlYnVMOyPFpm2IdUQoMOy8Ugxm-XLOTgoJpqQPE8QOeIY7t9Y66DM97MEIF-hcxxU4bWgZA9bKKI',
-    ),
-    _User(
-      name: 'Central Depot',
-      email: 'dispatch@depot01.com',
-      role: 'Warehouse',
-      initials: 'CD',
-      initialsBgColor: const Color(0xFF312e81), // indigo-900ish
-      initialsTextColor: const Color(0xFFa5b4fc), // indigo-300
-    ),
-    _User(
-      name: 'John Doe',
-      email: 'john.d@gmail.com',
-      role: 'Customer',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrMImsBtiszvyt9fYF-JB1rKEIJKBH7-Pvzp5mGxmVL_khQM-9dXpklsS2pg2Xvge34MKzeBGAIQku4no2pb1GKVHiPOi23bYyh1iY45QavJ-tqT4VxQGqgSbyQqzfs9-nGnp10fjaNHEe3eLt9LrtU9sScUJluWl8JI-K33bmPEEMESjp0BDL0q4rf_k_H2PRsY_lTmctGpttmPBD5t0mWluv-HTl1OdzXzCwuX0MOBoLuk0JhxsET-4gqs-Jaw6e8LBr0kC5GY0',
-    ),
-    _User(
-      name: 'David Kim',
-      email: 'd.kim_express@logitrack.com',
-      role: 'Courier',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCzbYziEapLgZdNzTG6YbbMljtk02rlIF0_IsMQ8osIMzZbtuF_5o2jdV64zneEeysgR9d6ccZogMWb3ZDPx2tOI9ylfjXfpDzv4wd4ua_RFpc4QHxhy4qIuMswt73g97pfBLVwPBTdELlv-DxblsjCy_WSevSZDYE-g15sFqjeD76-MMpt-h3mF_YrX5qXfexNX6pUNtZper2wSq0jNu5AeDHgBl87uV3dgZt6-Zl-1SyiqGsCTm4zbQ9kXe9rLMyYwqnwP5jZjTc',
-      isOnline: true, // Yellow status in mockup interpreted as 'Away' or just online
-    ),
-    _User(
-      name: 'Emily White',
-      email: 'emily.w@outlook.com',
-      role: 'Customer',
-      initials: 'EW',
-      initialsBgColor: const Color(0xFF831843), // pink-900ish
-      initialsTextColor: const Color(0xFFf9a8d4), // pink-300
-    ),
-     _User(
-      name: 'Robert Fox',
-      email: 'r.fox@logitrack.com',
-      role: 'Warehouse',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCkhU_lcXldtAt71R76MHlRtku5zBwc7F3aK-2ycPbJ5oB02vG1Y_YpnpdMm7qzL2BS2ygrVthwa2ilqfr8F7LU8bsmAapDDjlhQlESxg0nUgSOJhYQHWOy1xnDT6djkJvICeqjwP03I6a7VID0DdMgulJMhwnaazLaUrTnjYCuYu1bnKf85Ffw9jWtC6MqJsMULIitRBgffnvlpYUP_WoknZnKIOBkMYrW6ihgfTKLIlhoBJKK0QaWg2DhKMR73uiyxuzX_0H4gpM',
-    ),
+  // MOCK RAW RESPONSE from AdminProvider.getAllUsers()
+  final List<Map<String, dynamic>> _mockApiResponse = [
+    {
+      'uid': 'u1',
+      'name': 'Sarah Jenkins',
+      'email': 'sarah.j@logitrack.com',
+      'role': 'Admin',
+      'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBB2NFd-UOkhpxP6H7k5n9NdE5_KWwpEx8PH5SQRhrbqf8cV4UtY8u2yTEqNEfrUosinFifhDEMRjgHnP2BXDTd8_7A0xv6rJvYaT3GvxIIvJx6X5msYkIZ3WlxgNigxmoyj9Bv2pSyDltieZfCIYklWf7bRwmn6o5sdNYPDwUX6MwlqLQkBlYuipFJTSlRcmjDulDt0TLtSQ1uMtdwaCs_O4LtPJgyUDt-2Ge3AFg2WyYkkh5rCvF6Y1XQcIOT5qyWGQFQn5uCFbM',
+      'is_online': true
+    },
+    {
+      'uid': 'u2',
+      'name': 'Mike Ross',
+      'email': 'mike.ross@delivery.com',
+      'role': 'Courier',
+      'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuDwPjIkIlxPyXqCxs7NI0RTPErpI8oY15RTECjML9wjPTe7QlXOoj3TkvZJ1SbbEe5yr6DFegy8jEELdHsPqZ0e6jO2z11yZLb88j52-adcfMbJxUrIoq_fu9SjL2Fy668C1iLsP5j5AmPcjTyzc8tRv_gPtazl0OiMt76GF1bj-FFzVBPNwx2X9RWor6vqE1CxlYnVMOyPFpm2IdUQoMOy8Ugxm-XLOTgoJpqQPE8QOeIY7t9Y66DM97MEIF-hcxxU4bWgZA9bKKI',
+      'is_online': false
+    },
+    {
+      'uid': 'u3',
+      'name': 'Central Depot',
+      'email': 'dispatch@depot01.com',
+      'role': 'Warehouse',
+      'is_online': true
+    },
+    {
+      'uid': 'u4',
+      'name': 'John Doe',
+      'email': 'john.d@gmail.com',
+      'role': 'Customer',
+      'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrMImsBtiszvyt9fYF-JB1rKEIJKBH7-Pvzp5mGxmVL_khQM-9dXpklsS2pg2Xvge34MKzeBGAIQku4no2pb1GKVHiPOi23bYyh1iY45QavJ-tqT4VxQGqgSbyQqzfs9-nGnp10fjaNHEe3eLt9LrtU9sScUJluWl8JI-K33bmPEEMESjp0BDL0q4rf_k_H2PRsY_lTmctGpttmPBD5t0mWluv-HTl1OdzXzCwuX0MOBoLuk0JhxsET-4gqs-Jaw6e8LBr0kC5GY0',
+      'is_online': false
+    },
+    {
+      'uid': 'u5',
+      'name': 'David Kim',
+      'email': 'd.kim_express@logitrack.com',
+      'role': 'Courier',
+      'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCzbYziEapLgZdNzTG6YbbMljtk02rlIF0_IsMQ8osIMzZbtuF_5o2jdV64zneEeysgR9d6ccZogMWb3ZDPx2tOI9ylfjXfpDzv4wd4ua_RFpc4QHxhy4qIuMswt73g97pfBLVwPBTdELlv-DxblsjCy_WSevSZDYE-g15sFqjeD76-MMpt-h3mF_YrX5qXfexNX6pUNtZper2wSq0jNu5AeDHgBl87uV3dgZt6-Zl-1SyiqGsCTm4zbQ9kXe9rLMyYwqnwP5jZjTc',
+      'is_online': true
+    },
+    {
+      'uid': 'u6',
+      'name': 'Emily White',
+      'email': 'emily.w@outlook.com',
+      'role': 'Customer',
+      'is_online': false
+    },
+     {
+      'uid': 'u7',
+      'name': 'Robert Fox',
+      'email': 'r.fox@logitrack.com',
+      'role': 'Warehouse',
+      'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCkhU_lcXldtAt71R76MHlRtku5zBwc7F3aK-2ycPbJ5oB02vG1Y_YpnpdMm7qzL2BS2ygrVthwa2ilqfr8F7LU8bsmAapDDjlhQlESxg0nUgSOJhYQHWOy1xnDT6djkJvICeqjwP03I6a7VID0DdMgulJMhwnaazLaUrTnjYCuYu1bnKf85Ffw9jWtC6MqJsMULIitRBgffnvlpYUP_WoknZnKIOBkMYrW6ihgfTKLIlhoBJKK0QaWg2DhKMR73uiyxuzX_0H4gpM',
+      'is_online': true
+    },
   ];
 
   @override
@@ -99,12 +114,17 @@ class _UserListPageState extends State<UserListPage> {
     final subTextColor = isDarkMode ? AppColors.textGrayDark : AppColors.textGray;
     final borderColor = isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
 
+    // 0. Convert RAW JSON to Model (Simulate Provider)
+    final allUsers = _mockApiResponse.map((json) => _User.fromMap(json)).toList();
+
     // Filter Users
-    final filteredUsers = _allUsers.where((user) {
+    final filteredUsers = allUsers.where((user) {
       if (_selectedFilterIndex != 0 && user.role != _filters[_selectedFilterIndex]) {
         return false;
       }
-      return true; // Search logic can be added here
+      // Implementasi pencarian lokal
+      final query = _searchController.text.toLowerCase();
+      return user.name.toLowerCase().contains(query) || user.email.toLowerCase().contains(query);
     }).toList();
 
     return Scaffold(
@@ -254,19 +274,18 @@ class _UserListPageState extends State<UserListPage> {
                      ),
                    )
                  else
-                   Container(
-                     width: 48, height: 48,
-                     decoration: BoxDecoration(
-                       color: user.initialsBgColor ?? Colors.grey[300],
-                       shape: BoxShape.circle,
-                       border: Border.all(color: user.initialsTextColor?.withOpacity(0.3) ?? Colors.transparent),
+                     Container(
+                       width: 48, height: 48,
+                       decoration: BoxDecoration(
+                         color: Colors.grey[300],
+                         shape: BoxShape.circle,
+                       ),
+                       alignment: Alignment.center,
+                       child: Text(
+                         user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                         style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+                       ),
                      ),
-                     alignment: Alignment.center,
-                     child: Text(
-                       user.initials ?? '??',
-                       style: TextStyle(fontWeight: FontWeight.bold, color: user.initialsTextColor ?? Colors.black87),
-                     ),
-                   ),
                  
                  if (user.isOnline || user.role == 'Courier') // Show status dot for demo
                    Positioned(

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../config/app_constants.dart';
 
 class DeliveryExecutionPage extends StatefulWidget {
@@ -9,6 +11,17 @@ class DeliveryExecutionPage extends StatefulWidget {
 }
 
 class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final brightness = MediaQuery.of(context).platformBrightness;
@@ -120,15 +133,18 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
                                           _buildIconBtn(Icons.photo_library),
                                           const SizedBox(width: 32),
                                           // Shutter Button
-                                          Container(
-                                            width: 80, height: 80,
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(color: Colors.white, width: 4),
-                                            ),
+                                          GestureDetector(
+                                            onTap: () => _pickImage(ImageSource.camera),
                                             child: Container(
-                                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                              width: 80, height: 80,
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(color: Colors.white, width: 4),
+                                              ),
+                                              child: Container(
+                                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(width: 32),
@@ -203,13 +219,19 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
                                          decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(8),
                                             border: Border.all(color: AppColors.primary, width: 2),
-                                            image: const DecorationImage(
-                                              image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuCIERXAXF99M5n8rOUVZFow5TAGilV5ybjwmSKVeeBl3Prwja3EOXuHB9wGIk0KCqGtZbvonwzPQC-f5GvPLZy_lsWaW_OGHoGjM64t7GTXW1q_RoCHUD-bO-WIw_9gOV09txmsp4j6OFJLm3wpWZy3B_EJfeqouFdxW5R9pmjY3U3FrtC04j_xSepO82ZRHSy2kxDyMOH9YFc1FjBAv47ozQtMpZOT1Zmq4VoDZ3eD0LKW3UTojZtwbp7_8BDEQV5CvzWd3mm1mDM'),
-                                              fit: BoxFit.cover,
-                                            )
+                                            image: _imageFile != null
+                                              ? DecorationImage(
+                                                  image: FileImage(_imageFile!),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : const DecorationImage(
+                                                  image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuCIERXAXF99M5n8rOUVZFow5TAGilV5ybjwmSKVeeBl3Prwja3EOXuHB9wGIk0KCqGtZbvonwzPQC-f5GvPLZy_lsWaW_OGHoGjM64t7GTXW1q_RoCHUD-bO-WIw_9gOV09txmsp4j6OFJLm3wpWZy3B_EJfeqouFdxW5R9pmjY3U3FrtC04j_xSepO82ZRHSy2kxDyMOH9YFc1FjBAv47ozQtMpZOT1Zmq4VoDZ3eD0LKW3UTojZtwbp7_8BDEQV5CvzWd3mm1mDM'),
+                                                  fit: BoxFit.cover,
+                                                )
                                          ),
                                          child: Stack(
                                            children: [
+                                             if (_imageFile != null)
                                              Positioned(
                                                top: 4, right: 4,
                                                child: Container(
@@ -223,20 +245,23 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
                                        ),
                                        const SizedBox(width: 12),
                                        // Add Button
-                                       Container(
-                                         width: 96, height: 96,
-                                         decoration: BoxDecoration(
-                                           color: isDarkMode ? AppColors.surfaceDark : Colors.white,
-                                           borderRadius: BorderRadius.circular(8),
-                                           border: Border.all(color: Colors.grey.withOpacity(0.3), style: BorderStyle.solid), // Dashed manually difficult, using solid
-                                         ),
-                                         child: Column(
-                                           mainAxisAlignment: MainAxisAlignment.center,
-                                           children: [
-                                              Icon(Icons.add_a_photo, color: subTextColor, size: 28),
-                                              const SizedBox(height: 4),
-                                              Text('Tambah', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: subTextColor)),
-                                           ],
+                                       GestureDetector(
+                                         onTap: () => _pickImage(ImageSource.gallery),
+                                         child: Container(
+                                           width: 96, height: 96,
+                                           decoration: BoxDecoration(
+                                             color: isDarkMode ? AppColors.surfaceDark : Colors.white,
+                                             borderRadius: BorderRadius.circular(8),
+                                             border: Border.all(color: Colors.grey.withOpacity(0.3), style: BorderStyle.solid), // Dashed manually difficult, using solid
+                                           ),
+                                           child: Column(
+                                             mainAxisAlignment: MainAxisAlignment.center,
+                                             children: [
+                                                Icon(Icons.add_a_photo, color: subTextColor, size: 28),
+                                                const SizedBox(height: 4),
+                                                Text('Tambah', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: subTextColor)),
+                                             ],
+                                           ),
                                          ),
                                        )
                                      ],

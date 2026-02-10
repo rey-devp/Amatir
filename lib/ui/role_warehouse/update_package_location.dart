@@ -29,10 +29,44 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
   String? _selectedLocation;
   String? _selectedStatus;
 
+  bool _isLoading = false;
+
+  // Mock Package Data (Simulating result from searching Resi)
+  final Map<String, dynamic> _packageData = {
+    'resi': 'JP-882190',
+    'currentLocation': 'Hub Surabaya',
+    'status': 'On Process',
+    'statusColor': Colors.amber[800],
+    'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAvMshxZtKPsHx5gAsriWQDYlfijb7Q6p0r_LTF7BWQ345ytKX8kJrQpW8ZQvUEMxnfk_k63nNTX2VQA_-8VtoKJ9qkUiaavoQul6SGKXBuyzNJf5MMS-EmZyiwEntklECg0ef74__zFO7fn6omyTNk7qfBAS3Zr2X0wzl0r3I3mq4kM_rkNvlA0socUVGDCbgCebCACOh9uKwYKqAMYJMw2LO9IWNdrd41fnOaqLeWGuwZvqXBckTsV7-l2XAX5o6z82VZXO7g-LE'
+  };
+
   @override
   void initState() {
     super.initState();
     // Default values if needed, or leave null for "Pilih..."
+  }
+
+  Future<void> _submitUpdate() async {
+    if (_resiController.text.isEmpty || _selectedLocation == null || _selectedStatus == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Harap lengkapi semua data!'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    // Simulate API Call delay
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+      // Success Feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lokasi paket berhasil diupdate!'), backgroundColor: Colors.green),
+      );
+      Navigator.pop(context); // Optional: Go back to dashboard
+    }
   }
 
   @override
@@ -164,7 +198,7 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('RECEIPT ID', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subTextColor, letterSpacing: 0.5)),
-                                Text('JP-882190', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                                Text(_packageData['resi'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
                                 const SizedBox(height: 8),
                                 Divider(height: 1, color: borderColor.withOpacity(0.5)),
                                 const SizedBox(height: 8),
@@ -174,7 +208,7 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
                                   children: [
                                     const Icon(Icons.location_on, size: 18, color: AppColors.primary),
                                     const SizedBox(width: 4),
-                                    Text('Hub Surabaya', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor)),
+                                    Text(_packageData['currentLocation'], style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor)),
                                   ],
                                 ),
                                 const SizedBox(height: 8),
@@ -186,7 +220,7 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
                                     color: AppColors.warning.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: Text('On Process', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.amber[800])),
+                                  child: Text(_packageData['status'], style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _packageData['statusColor'])),
                                 )
                               ],
                             ),
@@ -198,8 +232,8 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(8),
-                              image: const DecorationImage(
-                                image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAvMshxZtKPsHx5gAsriWQDYlfijb7Q6p0r_LTF7BWQ345ytKX8kJrQpW8ZQvUEMxnfk_k63nNTX2VQA_-8VtoKJ9qkUiaavoQul6SGKXBuyzNJf5MMS-EmZyiwEntklECg0ef74__zFO7fn6omyTNk7qfBAS3Zr2X0wzl0r3I3mq4kM_rkNvlA0socUVGDCbgCebCACOh9uKwYKqAMYJMw2LO9IWNdrd41fnOaqLeWGuwZvqXBckTsV7-l2XAX5o6z82VZXO7g-LE'),
+                              image: DecorationImage(
+                                image: NetworkImage(_packageData['imageUrl']),
                                 fit: BoxFit.cover,
                               ),
                               border: Border.all(color: borderColor.withOpacity(0.5)),
@@ -292,25 +326,28 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
             BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, -2))
           ],
         ),
-        child: ElevatedButton(
-          onPressed: () {}, 
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.backgroundDark, // Text color
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 4,
-            shadowColor: AppColors.primary.withOpacity(0.5),
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _submitUpdate,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.backgroundDark, // Text color
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 4,
+              shadowColor: AppColors.primary.withOpacity(0.5),
+              disabledBackgroundColor: Colors.grey,
+            ),
+            child: _isLoading 
+              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
+              : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Text('Update Posisi Paket', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                   SizedBox(width: 8),
+                   Icon(Icons.check_circle, size: 22),
+                ],
+              ),
           ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-               Text('Update Posisi Paket', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-               SizedBox(width: 8),
-               Icon(Icons.check_circle, size: 22),
-            ],
-          ),
-        ),
       ),
     );
   }

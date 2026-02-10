@@ -2,20 +2,31 @@ import 'package:flutter/material.dart';
 import '../../config/app_constants.dart';
 
 // Local Data Model for Products
+// Local Data Model matching API Contract Response for getProducts
 class _ProductItem {
   final String id;
   final String name;
-  final String price; // Formatted string for display
+  final double price; // Contract: int/double
   final String imageUrl;
-  final bool isPromo;
+  final int stock; // Contract: int
 
   _ProductItem({
     required this.id,
     required this.name,
     required this.price,
     required this.imageUrl,
-    this.isPromo = false,
+    required this.stock,
   });
+
+  factory _ProductItem.fromMap(Map<String, dynamic> map) {
+    return _ProductItem(
+      id: map['id'] ?? '',
+      name: map['name'] ?? '',
+      price: (map['price'] as num?)?.toDouble() ?? 0.0,
+      imageUrl: map['imageUrl'] ?? '',
+      stock: map['stock'] ?? 0,
+    );
+  }
 }
 
 class HomeCustomerPage extends StatefulWidget {
@@ -28,45 +39,60 @@ class HomeCustomerPage extends StatefulWidget {
 class _HomeCustomerPageState extends State<HomeCustomerPage> {
   int _selectedIndex = 0; // "Home" selected
 
-  final List<_ProductItem> _products = [
-    _ProductItem(
-      id: '1',
-      name: 'Forklift Diesel 3 Ton',
-      price: 'Rp 155.000.000',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCyLWpw8svjLbLxJBp6PzlUZuxf36QWYL3hv2tAc8mUbCzDBI0lxCWXHGr87597_orMa7o-q4aOAwT2FuH-hwRB8_7Vn6t42EPT0N7kAP7xSPHlrQhw-8WjwqJ-KOrIFPmN5jnbhsDWCVCzhXil8QAGGCRy4kwdwImVBB664CBbbNfqN-UOw3O7DB7QTerfFGGyHFBYLX5ddMkg6HlORyecRHZl3YW97WHPgt3wP55ybFsgDy2WV459m3CwZ38YEKGes9szevZtrCQ',
-    ),
-    _ProductItem(
-      id: '2',
-      name: 'Heavy Duty Racking System',
-      price: 'Rp 8.200.000',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAp_NbpYwTwhIdEstLuIBtzmPhA9NUHcr-z9KBHxkmuewOWe8WJVj5j0-87jsP0e6XR6wwPn_66JDLX_huuNITxGsnV1QjWaUgdYB1JgHXpxhEVo0UjSZtKH9uiqLL690RURHGGM_5WzgggE9LL5OXD-AR_ELGYvjfL5tWxvLyTcDhP-4rLZYVTehMus7RW1M-sdYwuPw2mY8HkrCoIuWfIZx_wAxjAhXhUMW6EY1WutGGUqI8wTjY_YukVKVAZiKB0j-xETAwVq9g',
-      isPromo: true,
-    ),
-    _ProductItem(
-      id: '3',
-      name: 'Conveyor Belt System',
-      price: 'Rp 25.000.000',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4-KGqJ-dFzQVoZ1JM8RnXqdbumhJRkoqVgjnaTotIeyUCM5rSL4ToGYNtqlcm5d4783jEpKBvyH6gzovbEfFTr3XtYvMaeyjmCRK-pKNHqL93yA5yfSECYWU7YabaXshz-JBWTB6SCaNcMtz0YqGyyB6ub_BNZPFKMDeAToGX711Ia8yqxIxbQ9xmBO-chTgyxCDGDGDmjaYNgJO2kdCLxPHarsZwFExvyi_fWvZZfsXh1YaQsrPOcJSQsqcl11lcebKodSm42Ac',
-    ),
-    _ProductItem(
-      id: '4',
-      name: 'Wireless Warehouse Scanner',
-      price: 'Rp 3.500.000',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxtFKzec-nGXMw0-8_9fDaOaThmpDrE2HveRt85-YLnAEcjt09YlOr0a8-Zhkb8yDqCaxjtC-ngR7SjsRT1ld0WDVUulzk6906LXTR1P6Ii3C0XBaHdR4uoEghokE2ywa-WnJr7urL7uC22dR3XQc_c816Mi3QCvtC6gFn_jWemdK1mWgMXxxTWKvlJ9pFMSLOy1LRCPhWXfL7CB8VdJJe9JRDat93dpHf7EbJs_zNS_mUmIMsXqO3cVtwRqP5lMnxefTcbrzx0-Q',
-    ),
-     _ProductItem(
-      id: '5',
-      name: 'Euro Pallet (Kayu Standar)',
-      price: 'Rp 150.000',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4TVFGko9T1uW0NxE6cVhJ-a3lDA2cdtSkXMeKUGoA8JdtBOYN__PVarw8Y11OXvM2WKMZmCEfmad9MRzotAyelvCbTOWZhUKrOI-ikZtBCJwhgoSLLt_FD6Q5stDHbPrsBd8vvvThUhKptQIUixHYnhSp7OdHIGWIWijguzJvSZlWEKkTAmrZUHhwXp9XQIIwADhmzXRBlNU3j2EZX5pjgHb-oQYUyiOxwZcZujaSTsHqcgEWBx19SlbndTq_H1RYOYtw8hbXaZs',
-    ),
-     _ProductItem(
-      id: '6',
-      name: 'Pallet Jack Hydraulic',
-      price: 'Rp 4.500.000',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6v6Bd8nYsgT9WPhfYZNFSOyllgCE6mTh0QjGlyUpyEeEgZNc7pgj7ckrFp32LY4-hrB-ueJjtHhlTuE_4u9--mwlSlV1HCj3lMz2ukm2tAWrsOm_f8ZXhJ07-xBGKgeKa08HQv26eJRCTDgtEx6ACiwGhVbT04ly3wIsRG84OEOFgch4Ur0oRNmrBhH4aGCyUGxDVELca7CQcxvpZyfi4cVwHxOL669vRbP-6QYeIlGFFii9gmCutzY2CslSq4gJUehGGiuil2II',
-    ),
+  // MOCK RAW RESPONSE from CustomerProvider.getProducts()
+  final List<Map<String, dynamic>> _mockApiResponse = [
+    {
+      'id': '1',
+      'name': 'Forklift Diesel 3 Ton',
+      'price': 155000000,
+      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCyLWpw8svjLbLxJBp6PzlUZuxf36QWYL3hv2tAc8mUbCzDBI0lxCWXHGr87597_orMa7o-q4aOAwT2FuH-hwRB8_7Vn6t42EPT0N7kAP7xSPHlrQhw-8WjwqJ-KOrIFPmN5jnbhsDWCVCzhXil8QAGGCRy4kwdwImVBB664CBbbNfqN-UOw3O7DB7QTerfFGGyHFBYLX5ddMkg6HlORyecRHZl3YW97WHPgt3wP55ybFsgDy2WV459m3CwZ38YEKGes9szevZtrCQ',
+      'stock': 5,
+    },
+    {
+      'id': '2',
+      'name': 'Heavy Duty Racking System',
+      'price': 8200000,
+      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAp_NbpYwTwhIdEstLuIBtzmPhA9NUHcr-z9KBHxkmuewOWe8WJVj5j0-87jsP0e6XR6wwPn_66JDLX_huuNITxGsnV1QjWaUgdYB1JgHXpxhEVo0UjSZtKH9uiqLL690RURHGGM_5WzgggE9LL5OXD-AR_ELGYvjfL5tWxvLyTcDhP-4rLZYVTehMus7RW1M-sdYwuPw2mY8HkrCoCoIuWfIZx_wAxjAhXhUMW6EY1WutGGUqI8wTjY_YukVKVAZiKB0j-xETAwVq9g',
+      'stock': 12,
+    },
+    {
+      'id': '3',
+      'name': 'Conveyor Belt System',
+      'price': 25000000,
+      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4-KGqJ-dFzQVoZ1JM8RnXqdbumhJRkoqVgjnaTotIeyUCM5rSL4ToGYNtqlcm5d4783jEpKBvyH6gzovbEfFTr3XtYvMaeyjmCRK-pKNHqL93yA5yfSECYWU7YabaXshz-JBWTB6SCaNcMtz0YqGyyB6ub_BNZPFKMDeAToGX711Ia8yqxIxbQ9xmBO-chTgyxCDGDGDmjaYNgJO2kdCLxPHarsZwFExvyi_fWvZZfsXh1YaQsrPOcJSQsqcl11lcebKodSm42Ac',
+      'stock': 3,
+    },
+    {
+      'id': '4',
+      'name': 'Wireless Warehouse Scanner',
+      'price': 3500000,
+      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxtFKzec-nGXMw0-8_9fDaOaThmpDrE2HveRt85-YLnAEcjt09YlOr0a8-Zhkb8yDqCaxjtC-ngR7SjsRT1ld0WDVUulzk6906LXTR1P6Ii3C0XBaHdR4uoEghokE2ywa-WnJr7urL7uC22dR3XQc_c816Mi3QCvtC6gFn_jWemdK1mWgMXxxTWKvlJ9pFMSLOy1LRCPhWXfL7CB8VdJJe9JRDat93dpHf7EbJs_zNS_mUmIMsXqO3cVtwRqP5lMnxefTcbrzx0-Q',
+      'stock': 50,
+    },
+     {
+      'id': '5',
+      'name': 'Euro Pallet (Kayu Standar)',
+      'price': 150000,
+      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4TVFGko9T1uW0NxE6cVhJ-a3lDA2cdtSkXMeKUGoA8JdtBOYN__PVarw8Y11OXvM2WKMZmCEfmad9MRzotAyelvCbTOWZhUKrOI-ikZtBCJwhgoSLLt_FD6Q5stDHbPrsBd8vvvThUhKptQIUixHYnhSp7OdHIGWIWijguzJvSZlWEKkTAmrZUHhwXp9XQIIwADhmzXRBlNU3j2EZX5pjgHb-oQYUyiOxwZcZujaSTsHqcgEWBx19SlbndTq_H1RYOYtw8hbXaZs',
+      'stock': 200,
+    },
+     {
+      'id': '6',
+      'name': 'Pallet Jack Hydraulic',
+      'price': 4500000,
+      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6v6Bd8nYsgT9WPhfYZNFSOyllgCE6mTh0QjGlyUpyEeEgZNc7pgj7ckrFp32LY4-hrB-ueJjtHhlTuE_4u9--mwlSlV1HCj3lMz2ukm2tAWrsOm_f8ZXhJ07-xBGKgeKa08HQv26eJRCTDgtEx6ACiwGhVbT04ly3wIsRG84OEOFgch4Ur0oRNmrBhH4aGCyUGxDVELca7CQcxvpZyfi4cVwHxOL669vRbP-6QYeIlGFFii9gmCutzY2CslSq4gJUehGGiuil2II',
+      'stock': 15,
+    },
   ];
+
+  late List<_ProductItem> _products;
+
+  @override
+  void initState() {
+    super.initState();
+    _products = _mockApiResponse.map((json) => _ProductItem.fromMap(json)).toList();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +217,10 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
               children: [
                 _buildNavItem(Icons.home, 'Home', true),
                 _buildNavItem(Icons.assignment, 'Pesanan', false),
-                _buildNavItem(Icons.local_shipping, 'Lacak', false),
+                InkWell(
+                  onTap: () => Navigator.pushNamed(context, '/customer-order-detail'),
+                  child: _buildNavItem(Icons.local_shipping, 'Lacak', false)
+                ),
                 _buildNavItem(Icons.person, 'Profil', false),
               ],
             ),
@@ -221,15 +250,6 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
                   product.imageUrl,
                   fit: BoxFit.cover,
                 ),
-                if (product.isPromo)
-                 Positioned(
-                   top: 8, right: 8,
-                   child: Container(
-                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                     decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)),
-                     child: const Text('PROMO', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                   ),
-                 )
               ],
             ),
           ),
@@ -248,7 +268,7 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
                  ),
                  const SizedBox(height: 8),
                  Text(
-                   product.price,
+                   _formatCurrency(product.price),
                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
                  ),
                  const SizedBox(height: 12),
@@ -294,5 +314,13 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
          )
        ],
      );
+  }
+
+  String _formatCurrency(double price) {
+    final priceString = price.toStringAsFixed(0).replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
+      (Match m) => '${m[1]}.'
+    );
+    return 'Rp $priceString';
   }
 }

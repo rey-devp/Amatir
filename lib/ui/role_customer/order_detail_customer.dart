@@ -2,13 +2,83 @@ import 'package:flutter/material.dart';
 import '../../config/app_constants.dart';
 
 // Local Data Model for Tracking Timeline
+// Local Data Model matching API Contract Response for getOrderDetail
+class _TimelineItem {
+  final String status;
+  final String description;
+  final String location;
+  final String timestamp; // Contract: datetime string
+  final String? updatedBy;
+
+  _TimelineItem({
+    required this.status,
+    required this.description,
+    required this.location,
+    required this.timestamp,
+    this.updatedBy,
+  });
+
+  factory _TimelineItem.fromMap(Map<String, dynamic> map) {
+    return _TimelineItem(
+      status: map['status'] ?? '',
+      description: map['description'] ?? '',
+      location: map['location'] ?? '',
+      timestamp: map['timestamp'] ?? '',
+      updatedBy: map['updatedBy'],
+    );
+  }
+}
+
+class _CourierInfo {
+  final String name;
+  final String phone;
+  final String imageUrl; // Not in contract example but usually needed for UI
+
+  _CourierInfo({required this.name, required this.phone, required this.imageUrl});
+
+  factory _CourierInfo.fromMap(Map<String, dynamic> map) {
+    return _CourierInfo(
+      name: map['name'] ?? '',
+      phone: map['phone'] ?? '',
+      imageUrl: map['imageUrl'] ?? '',
+    );
+  }
+}
+
+class _OrderDetail {
+  final String trackingId;
+  final String currentStatus;
+  final String estimatedArrival;
+  final List<_TimelineItem> timeline;
+  final _CourierInfo? courier;
+
+  _OrderDetail({
+    required this.trackingId,
+    required this.currentStatus,
+    required this.estimatedArrival,
+    required this.timeline,
+    this.courier,
+  });
+
+  factory _OrderDetail.fromMap(Map<String, dynamic> map) {
+    return _OrderDetail(
+      trackingId: map['trackingId'] ?? '',
+      currentStatus: map['currentStatus'] ?? '',
+      estimatedArrival: map['estimatedArrival'] ?? '',
+      timeline: (map['timeline'] as List?)?.map((e) => _TimelineItem.fromMap(e)).toList() ?? [],
+      courier: map['courier'] != null ? _CourierInfo.fromMap(map['courier']) : null,
+    );
+  }
+}
+
+// Internal UI Model for Widget Builder (keeping existing logic for rendering)
 class _TrackingStep {
   final String title;
   final String description;
   final String time;
   final bool isCompleted;
   final bool isCurrent;
-  final Widget? extraContent; // For Courier info
+  final _CourierInfo? courierInfo; // Pass courier info here if needed
 
   _TrackingStep({
     required this.title,
@@ -16,7 +86,7 @@ class _TrackingStep {
     required this.time,
     this.isCompleted = false,
     this.isCurrent = false,
-    this.extraContent,
+    this.courierInfo,
   });
 }
 
@@ -29,38 +99,73 @@ class OrderDetailCustomerPage extends StatefulWidget {
 
 class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
   
+  // MOCK RAW RESPONSE from CustomerProvider.getOrderDetail()
+  final Map<String, dynamic> _mockApiResponse = {
+    'trackingId': 'LOGI-8839201',
+    'currentStatus': 'Out for Delivery',
+    'estimatedArrival': 'Today, 16:00',
+    'timeline': [
+      {
+        'status': 'Out for Delivery',
+        'description': 'Your package is on the way with our courier.',
+        'location': 'Jakarta Selatan',
+        'timestamp': '13:45 PM',
+        'updatedBy': 'Budi Santoso'
+      },
+      {
+        'status': 'Departed from Hub',
+        'description': 'Package has left the facility',
+        'location': 'Jakarta Central Hub',
+        'timestamp': '10:00 AM',
+        'updatedBy': 'System'
+      },
+      {
+        'status': 'Arrived at Warehouse',
+        'description': 'Package sorted at facility',
+        'location': 'Jakarta Central Warehouse',
+        'timestamp': 'Yesterday, 22:00',
+        'updatedBy': 'System'
+      },
+      {
+        'status': 'Order Placed',
+        'description': 'Order has been created',
+        'location': 'Online Store',
+        'timestamp': 'Yesterday, 09:00',
+        'updatedBy': 'Customer'
+      }
+    ],
+    'courier': {
+      'name': 'Budi Santoso',
+      'phone': '081234567890',
+      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAujIbPjH8524m9DcL-mNRCL0spYICOoNpx7AYp2TU8QUicMrHO8sclRH-s6oBAMqGPq9EMcmAVI-6MpH31X9n95y01HjGtaxjrz7Y086vlXSOTskAY2IkujfLu06PlOJpjtXqmleOgZlWWZkgTDz9SmzF0gtVgzHcjdb3CJ6gFonkNN5F1kRRfbOTi3kStTSXakgPTU5ogH01BLPTjNyr4mJl-PEp93qg7r4c1qSCKHaupU7sSIgJPqWECRjCz1_ia5LmGF4JiAOA'
+    }
+  };
+
+  late _OrderDetail _orderDetail;
   late List<_TrackingStep> _steps;
 
   @override
   void initState() {
     super.initState();
-    _steps = [
-      _TrackingStep(
-        title: 'Out for Delivery',
-        description: 'Your package is on the way with our courier.',
-        time: '13:45 PM',
-        isCurrent: true,
-        extraContent: _buildCourierInfo(),
-      ),
-      _TrackingStep(
-        title: 'Departed from Hub',
-        description: 'Jakarta Central Hub',
-        time: '10:00 AM',
-        isCompleted: true,
-      ),
-      _TrackingStep(
-        title: 'Arrived at Warehouse',
-        description: 'Jakarta Central Warehouse',
-        time: 'Yesterday, 22:00',
-        isCompleted: true,
-      ),
-      _TrackingStep(
-        title: 'Order Placed',
-        description: 'Online Store',
-        time: 'Yesterday, 09:00',
-        isCompleted: true,
-      ),
-    ];
+    // Simulate Parsing
+    _orderDetail = _OrderDetail.fromMap(_mockApiResponse);
+    
+    // Convert to UI Steps
+    _steps = _orderDetail.timeline.map((item) {
+      final isCurrent = item.status == _orderDetail.currentStatus;
+      // In a real app, logic for 'isCompleted' would compare timestamps or status order
+      // Here we assume items passed are completed or current
+      final isCompleted = true; 
+
+      return _TrackingStep(
+        title: item.status,
+        description: '${item.description} - ${item.location}',
+        time: item.timestamp,
+        isCurrent: isCurrent,
+        isCompleted: isCompleted,
+        courierInfo: isCurrent ? _orderDetail.courier : null,
+      );
+    }).toList();
   }
 
   Widget _buildCourierInfo() {
@@ -189,7 +294,7 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                                         const SizedBox(height: 4),
                                         Row(
                                           children: [
-                                            Text('LOGI-8839201', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                                            Text(_orderDetail.trackingId, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                                             const SizedBox(width: 8),
                                             Icon(Icons.content_copy, size: 16, color: subTextColor),
                                           ],
@@ -201,7 +306,7 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                                       children: [
                                         Text('EST. ARRIVAL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subTextColor, letterSpacing: 0.5)),
                                         const SizedBox(height: 4),
-                                        const Text('Today, 16:00', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                                        Text(_orderDetail.estimatedArrival, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
                                       ],
                                     )
                                   ],
@@ -253,46 +358,50 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                     const SizedBox(height: 16),
                     
                     // Proof of Delivery Section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: surfaceColor,
-                        borderRadius: BorderRadius.circular(16),
-                         border: Border.all(color: borderColor),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.image, color: AppColors.primary, size: 20),
-                                    const SizedBox(width: 8),
-                                    Text('Proof of Delivery', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Text('Status', style: TextStyle(fontSize: 12, color: subTextColor)),
-                                Text('Pending Delivery', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
-                                const SizedBox(height: 4),
-                                Text('Photo will appear here upon arrival', style: TextStyle(fontSize: 12, color: isDarkMode ? const Color(0xFF587a81) : AppColors.textGray)),
-                              ],
+                    // Proof of Delivery Section
+                    if (_steps.any((s) => s.title == 'Delivered' && s.isCompleted)) ...[
+                       Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: surfaceColor,
+                          borderRadius: BorderRadius.circular(16),
+                           border: Border.all(color: borderColor),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.image, color: AppColors.primary, size: 20),
+                                      const SizedBox(width: 8),
+                                      Text('Proof of Delivery', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text('Status', style: TextStyle(fontSize: 12, color: subTextColor)),
+                                  Text('Delivered', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: 80, height: 80,
-                            decoration: BoxDecoration(
-                               color: isDarkMode ? const Color(0xFF111f22) : Colors.grey.shade100,
-                               borderRadius: BorderRadius.circular(8),
-                               border: Border.all(color: isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade300, style: BorderStyle.none), // dashed border hard in standard flutter without packages 
-                            ),
-                            child: const Icon(Icons.photo_camera, color: Colors.grey, size: 32),
-                          )
-                        ],
+                            Container(
+                              width: 80, height: 80,
+                              decoration: BoxDecoration(
+                                 color: isDarkMode ? const Color(0xFF111f22) : Colors.grey.shade100,
+                                 borderRadius: BorderRadius.circular(8),
+                                 border: Border.all(color: isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade300, style: BorderStyle.none), 
+                                 image: const DecorationImage(
+                                    image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDxtFKzec-nGXMw0-8_9fDaOaThmpDrE2HveRt85-YLnAEcjt09YlOr0a8-Zhkb8yDqCaxjtC-ngR7SjsRT1ld0WDVUulzk6906LXTR1P6Ii3C0XBaHdR4uoEghokE2ywa-WnJr7urL7uC22dR3XQc_c816Mi3QCvtC6gFn_jWemdK1mWgMXxxTWKvlJ9pFMSLOy1LRCPhWXfL7CB8VdJJe9JRDat93dpHf7EbJs_zNS_mUmIMsXqO3cVtwRqP5lMnxefTcbrzx0-Q'),
+                                    fit: BoxFit.cover,
+                                 )
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                     
                     const SizedBox(height: 80), // Bottom padding
                   ],
@@ -375,7 +484,7 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                     Text(step.description, style: TextStyle(fontSize: 14, color: isDarkMode ? (step.isCurrent ? const Color(0xFF92c0c9) : subTextColor) : Colors.grey[600] )),
                     
                     // Extra Content (Courier Info)
-                    if (step.extraContent != null) ...[
+                    if (step.courierInfo != null) ...[
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -391,8 +500,8 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                                decoration: BoxDecoration(
                                  color: Colors.grey.shade200,
                                  shape: BoxShape.circle,
-                                 image: const DecorationImage(
-                                   image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAujIbPjH8524m9DcL-mNRCL0spYICOoNpx7AYp2TU8QUicMrHO8sclRH-s6oBAMqGPq9EMcmAVI-6MpH31X9n95y01HjGtaxjrz7Y086vlXSOTskAY2IkujfLu06PlOJpjtXqmleOgZlWWZkgTDz9SmzF0gtVgzHcjdb3CJ6gFonkNN5F1kRRfbOTi3kStTSXakgPTU5ogH01BLPTjNyr4mJl-PEp93qg7r4c1qSCKHaupU7sSIgJPqWECRjCz1_ia5LmGF4JiAOA'),
+                                 image: DecorationImage(
+                                   image: NetworkImage(step.courierInfo!.imageUrl),
                                    fit: BoxFit.cover,
                                  ),
                                ),
@@ -402,14 +511,8 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                                child: Column(
                                  crossAxisAlignment: CrossAxisAlignment.start,
                                  children: [
-                                   Text('Budi Santoso', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
-                                   Row(
-                                     children: [
-                                        const Icon(Icons.star, size: 14, color: AppColors.textGray),
-                                        const SizedBox(width: 2),
-                                        Text('4.9 • Courier', style: TextStyle(fontSize: 12, color: subTextColor)),
-                                     ],
-                                   )
+                                   Text(step.courierInfo!.name, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+                                   Text('Courier', style: TextStyle(fontSize: 12, color: subTextColor)),
                                  ],
                                ),
                              ),
