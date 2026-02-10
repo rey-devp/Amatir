@@ -49,6 +49,17 @@ class AuthService {
     return newUser;
   }
 
+  // GET USER DATA
+  Future<UserModel> getUserData(String uid) async {
+    DocumentSnapshot doc = await _db.collection('users').doc(uid).get();
+
+    if (doc.exists) {
+      return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+    } else {
+      throw Exception('Data user tidak ditemukan');
+    }
+  }
+
   Future<void> signOut() async {
     await _auth.signOut();
   }

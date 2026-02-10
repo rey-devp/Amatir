@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../config/app_constants.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import '../../config/app_colors.dart';
 import 'update_package_location.dart';
 
 class WarehouseScanPage extends StatefulWidget {
@@ -10,86 +11,84 @@ class WarehouseScanPage extends StatefulWidget {
 }
 
 class _WarehouseScanPageState extends State<WarehouseScanPage> {
-  bool _isScanning = true;
-
-  @override
-  void initState() {
-    super.initState();
-    // Simulate finding a code after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() => _isScanning = false);
-        _showResultDialog();
-      }
-    });
-  }
-
-  void _showResultDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Barcode Detected'),
-        content: const Text('Resi ID: JP-882190'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Close scan page
-            }, 
-            child: const Text('Cancel')
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Close scan page
-              // Navigate to Update Page with data (simulated)
-               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const UpdatePackageLocationPage()),
-              );
-            }, 
-            child: const Text('Process')
-          ),
-        ],
-      )
-    );
-  }
+  bool _isScanCompleted = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Scan Package Barcode'),
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
       backgroundColor: Colors.black,
       body: Stack(
+        alignment: Alignment.center,
         children: [
-          Center(
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.primary, width: 2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: _isScanning 
-                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-                : const Center(child: Icon(Icons.qr_code, color: Colors.white, size: 80)),
+          MobileScanner(
+            onDetect: (capture) {
+              if (_isScanCompleted) return;
+              
+              final List<Barcode> barcodes = capture.barcodes;
+              if (barcodes.isNotEmpty) {
+                final String? code = barcodes.first.rawValue;
+                if (code != null) {
+                  setState(() => _isScanCompleted = true);
+                  _onCodeDetected(code);
+                }
+              }
+            },
+          ),
+          
+          // Overlay Scanner Frame
+          Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.primary, width: 2),
+              borderRadius: BorderRadius.circular(20),
             ),
           ),
+          
           Positioned(
-            top: 50, left: 16,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          const Positioned(
-            bottom: 50, left: 0, right: 0,
+            bottom: 100,
             child: Text(
-              'Align QR Code / Barcode within frame',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              'Arahkan kamera ke Barcode / QR Code Paket',
+              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14),
             ),
           )
+        ],
+      ),
+    );
+  }
+
+  void _onCodeDetected(String code) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Paket Terdeteksi'),
+        content: Text('ID Tracking: $code'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() => _isScanCompleted = false);
+              Navigator.pop(context);
+            },
+            child: const Text('Scan Ulang'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UpdatePackageLocationPage(trackingId: code),
+                ),
+              );
+            },
+            child: const Text('Proses Paket'),
+          ),
         ],
       ),
     );

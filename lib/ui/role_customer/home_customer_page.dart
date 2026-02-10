@@ -1,33 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../config/app_constants.dart';
-
-// Local Data Model for Products
-// Local Data Model matching API Contract Response for getProducts
-class _ProductItem {
-  final String id;
-  final String name;
-  final double price; // Contract: int/double
-  final String imageUrl;
-  final int stock; // Contract: int
-
-  _ProductItem({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.imageUrl,
-    required this.stock,
-  });
-
-  factory _ProductItem.fromMap(Map<String, dynamic> map) {
-    return _ProductItem(
-      id: map['id'] ?? '',
-      name: map['name'] ?? '',
-      price: (map['price'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: map['imageUrl'] ?? '',
-      stock: map['stock'] ?? 0,
-    );
-  }
-}
+import 'package:provider/provider.dart';
+import '../../config/app_colors.dart';
+import '../../config/routes.dart';
+import '../../models/product_model.dart';
+import '../../models/order_model.dart';
+import '../../providers/product_provider.dart';
+import '../../providers/order_provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../ui/widgets/order_card.dart';
+import '../../utils/formatter.dart';
 
 class HomeCustomerPage extends StatefulWidget {
   const HomeCustomerPage({super.key});
@@ -37,75 +18,23 @@ class HomeCustomerPage extends StatefulWidget {
 }
 
 class _HomeCustomerPageState extends State<HomeCustomerPage> {
-  int _selectedIndex = 0; // "Home" selected
-
-  // MOCK RAW RESPONSE from CustomerProvider.getProducts()
-  final List<Map<String, dynamic>> _mockApiResponse = [
-    {
-      'id': '1',
-      'name': 'Forklift Diesel 3 Ton',
-      'price': 155000000,
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCyLWpw8svjLbLxJBp6PzlUZuxf36QWYL3hv2tAc8mUbCzDBI0lxCWXHGr87597_orMa7o-q4aOAwT2FuH-hwRB8_7Vn6t42EPT0N7kAP7xSPHlrQhw-8WjwqJ-KOrIFPmN5jnbhsDWCVCzhXil8QAGGCRy4kwdwImVBB664CBbbNfqN-UOw3O7DB7QTerfFGGyHFBYLX5ddMkg6HlORyecRHZl3YW97WHPgt3wP55ybFsgDy2WV459m3CwZ38YEKGes9szevZtrCQ',
-      'stock': 5,
-    },
-    {
-      'id': '2',
-      'name': 'Heavy Duty Racking System',
-      'price': 8200000,
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAp_NbpYwTwhIdEstLuIBtzmPhA9NUHcr-z9KBHxkmuewOWe8WJVj5j0-87jsP0e6XR6wwPn_66JDLX_huuNITxGsnV1QjWaUgdYB1JgHXpxhEVo0UjSZtKH9uiqLL690RURHGGM_5WzgggE9LL5OXD-AR_ELGYvjfL5tWxvLyTcDhP-4rLZYVTehMus7RW1M-sdYwuPw2mY8HkrCoCoIuWfIZx_wAxjAhXhUMW6EY1WutGGUqI8wTjY_YukVKVAZiKB0j-xETAwVq9g',
-      'stock': 12,
-    },
-    {
-      'id': '3',
-      'name': 'Conveyor Belt System',
-      'price': 25000000,
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4-KGqJ-dFzQVoZ1JM8RnXqdbumhJRkoqVgjnaTotIeyUCM5rSL4ToGYNtqlcm5d4783jEpKBvyH6gzovbEfFTr3XtYvMaeyjmCRK-pKNHqL93yA5yfSECYWU7YabaXshz-JBWTB6SCaNcMtz0YqGyyB6ub_BNZPFKMDeAToGX711Ia8yqxIxbQ9xmBO-chTgyxCDGDGDmjaYNgJO2kdCLxPHarsZwFExvyi_fWvZZfsXh1YaQsrPOcJSQsqcl11lcebKodSm42Ac',
-      'stock': 3,
-    },
-    {
-      'id': '4',
-      'name': 'Wireless Warehouse Scanner',
-      'price': 3500000,
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxtFKzec-nGXMw0-8_9fDaOaThmpDrE2HveRt85-YLnAEcjt09YlOr0a8-Zhkb8yDqCaxjtC-ngR7SjsRT1ld0WDVUulzk6906LXTR1P6Ii3C0XBaHdR4uoEghokE2ywa-WnJr7urL7uC22dR3XQc_c816Mi3QCvtC6gFn_jWemdK1mWgMXxxTWKvlJ9pFMSLOy1LRCPhWXfL7CB8VdJJe9JRDat93dpHf7EbJs_zNS_mUmIMsXqO3cVtwRqP5lMnxefTcbrzx0-Q',
-      'stock': 50,
-    },
-     {
-      'id': '5',
-      'name': 'Euro Pallet (Kayu Standar)',
-      'price': 150000,
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4TVFGko9T1uW0NxE6cVhJ-a3lDA2cdtSkXMeKUGoA8JdtBOYN__PVarw8Y11OXvM2WKMZmCEfmad9MRzotAyelvCbTOWZhUKrOI-ikZtBCJwhgoSLLt_FD6Q5stDHbPrsBd8vvvThUhKptQIUixHYnhSp7OdHIGWIWijguzJvSZlWEKkTAmrZUHhwXp9XQIIwADhmzXRBlNU3j2EZX5pjgHb-oQYUyiOxwZcZujaSTsHqcgEWBx19SlbndTq_H1RYOYtw8hbXaZs',
-      'stock': 200,
-    },
-     {
-      'id': '6',
-      'name': 'Pallet Jack Hydraulic',
-      'price': 4500000,
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6v6Bd8nYsgT9WPhfYZNFSOyllgCE6mTh0QjGlyUpyEeEgZNc7pgj7ckrFp32LY4-hrB-ueJjtHhlTuE_4u9--mwlSlV1HCj3lMz2ukm2tAWrsOm_f8ZXhJ07-xBGKgeKa08HQv26eJRCTDgtEx6ACiwGhVbT04ly3wIsRG84OEOFgch4Ur0oRNmrBhH4aGCyUGxDVELca7CQcxvpZyfi4cVwHxOL669vRbP-6QYeIlGFFii9gmCutzY2CslSq4gJUehGGiuil2II',
-      'stock': 15,
-    },
-  ];
-
-  late List<_ProductItem> _products;
-
-  @override
-  void initState() {
-    super.initState();
-    _products = _mockApiResponse.map((json) => _ProductItem.fromMap(json)).toList();
-  }
-
+  String _selectedCategory = "Semua";
 
   @override
   Widget build(BuildContext context) {
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDarkMode = brightness == Brightness.dark;
 
-     // Colors
     final backgroundColor = isDarkMode ? AppColors.backgroundDark : AppColors.backgroundLight;
     final surfaceColor = isDarkMode ? AppColors.surfaceDark : AppColors.surfaceLight;
     final textColor = isDarkMode ? AppColors.textLight : AppColors.textDark;
     final subTextColor = isDarkMode ? AppColors.textGrayDark : AppColors.textGray;
-    final borderColor = isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
     final cardColor = isDarkMode ? const Color(0xFF16282b) : Colors.white;
+    final borderColor = isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
+
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+    final productProvider = Provider.of<ProductProvider>(context);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -125,7 +54,7 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Selamat datang kembali,', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: subTextColor)),
-                    Text('Halo, Budi Santoso', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                    Text('Halo, ${user?.name ?? 'Pelanggan'}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                   ],
                 ),
                 Stack(
@@ -142,7 +71,7 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
                 )
               ],
             ),
-             bottom: PreferredSize(
+            bottom: PreferredSize(
               preferredSize: const Size.fromHeight(60),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
@@ -167,40 +96,33 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
             ),
           ),
 
-
-          // 2. Section Title
+          // 2. Tabs
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   Text('Katalog Produk', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
-                   TextButton(onPressed: (){}, child: const Text('Lihat Semua', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold))),
+                  _buildTabItem("Semua", _selectedCategory == "Semua", isDarkMode),
+                  _buildTabItem("Elektronik", _selectedCategory == "Elektronik", isDarkMode),
+                  _buildTabItem("Fashion", _selectedCategory == "Fashion", isDarkMode),
+                  _buildTabItem("Health", _selectedCategory == "Health", isDarkMode),
+                  const SizedBox(width: 16),
+                  Container(width: 1, height: 24, color: borderColor),
+                  const SizedBox(width: 16),
+                  _buildTabItem("Pesanan Saya", _selectedCategory == "Pesanan Saya", isDarkMode),
                 ],
               ),
             ),
           ),
 
-          // 3. Product Grid
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.75, // Adjust based on card content
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final product = _products[index];
-                  return _buildProductCard(product, cardColor, textColor, subTextColor, isDarkMode);
-                },
-                childCount: _products.length,
-              ),
-            ),
-          ),
+          // 3. Grid or List Content
+          if (_selectedCategory == "Pesanan Saya")
+            _buildOrderList(user?.uid ?? '', isDarkMode, textColor, subTextColor, surfaceColor)
+          else
+            _buildProductGrid(productProvider, cardColor, textColor, subTextColor, isDarkMode),
+
+          const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
         ],
       ),
 
@@ -215,13 +137,19 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home, 'Home', true),
-                _buildNavItem(Icons.assignment, 'Pesanan', false),
-                InkWell(
-                  onTap: () => Navigator.pushNamed(context, '/customer-order-detail'),
-                  child: _buildNavItem(Icons.local_shipping, 'Lacak', false)
+                _buildNavItem(Icons.home, 'Home', _selectedCategory != "Pesanan Saya"),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.customerOrders),
+                  child: _buildNavItem(Icons.assignment, 'Pesanan', false),
                 ),
-                _buildNavItem(Icons.person, 'Profil', false),
+                _buildNavItem(Icons.local_shipping, 'Lacak', false),
+                InkWell(
+                  onTap: () {
+                     Provider.of<AuthProvider>(context, listen: false).logout();
+                     Navigator.pushReplacementNamed(context, AppRoutes.login);
+                  },
+                  child: _buildNavItem(Icons.logout, 'Logout', false),
+                ),
               ],
             ),
           ),
@@ -230,65 +158,169 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
     );
   }
 
-  Widget _buildProductCard(_ProductItem product, Color cardColor, Color textColor, Color subTextColor, bool isDarkMode) {
+  Widget _buildTabItem(String label, bool isSelected, bool isDarkMode) {
+    return GestureDetector(
+      onTap: () => setState(() => _selectedCategory = label),
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : (isDarkMode ? Colors.white.withOpacity(0.05) : Colors.grey[200]),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.black : (isDarkMode ? Colors.white : Colors.black),
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductGrid(ProductProvider provider, Color cardColor, Color textColor, Color subTextColor, bool isDarkMode) {
+    if (provider.isLoading) {
+      return const SliverToBoxAdapter(child: Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())));
+    }
+
+    if (provider.products.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Text("Tidak ada produk tersedia.", style: TextStyle(color: subTextColor)),
+          ),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.75,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final product = provider.products[index];
+            return _buildProductCard(product, cardColor, textColor, subTextColor, isDarkMode);
+          },
+          childCount: provider.products.length,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderList(String uid, bool isDarkMode, Color textColor, Color subTextColor, Color surfaceColor) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: StreamBuilder<List<OrderModel>>(
+        stream: Provider.of<OrderProvider>(context, listen: false).getOrdersByCustomer(uid),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SliverToBoxAdapter(child: Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())));
+          }
+          if (snapshot.hasError) {
+            return SliverToBoxAdapter(child: Center(child: Text("Error: ${snapshot.error}", style: TextStyle(color: subTextColor))));
+          }
+          final orders = snapshot.data ?? [];
+          if (orders.isEmpty) {
+            return SliverToBoxAdapter(
+              child: Center(child: Padding(padding: EdgeInsets.all(32), child: Text("Belum ada pesanan.", style: TextStyle(color: subTextColor)))),
+            );
+          }
+
+          return SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final order = orders[index];
+                return _buildOrderCard(order, isDarkMode, textColor, subTextColor, surfaceColor);
+              },
+              childCount: orders.length,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildOrderCard(OrderModel order, bool isDarkMode, Color textColor, Color subTextColor, Color surfaceColor) {
+    return OrderCard(
+      order: order,
+      isDarkMode: isDarkMode,
+      onTap: () => Navigator.pushNamed(context, AppRoutes.customerOrderDetail, arguments: order),
+    );
+  }
+
+  Widget _buildProductCard(ProductModel product, Color cardColor, Color textColor, Color subTextColor, bool isDarkMode) {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image
           Expanded(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                ),
-              ],
+            child: Image.network(
+              product.imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey[300], child: const Icon(Icons.image_not_supported)),
             ),
           ),
-          
-          // Info
           Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Text(
-                   product.name,
-                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: textColor),
-                   maxLines: 2,
-                   overflow: TextOverflow.ellipsis,
-                 ),
-                 const SizedBox(height: 8),
-                 Text(
-                   _formatCurrency(product.price),
-                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
-                 ),
-                 const SizedBox(height: 12),
-                 SizedBox(
-                   width: double.infinity,
-                   child: ElevatedButton(
-                     onPressed: (){}, 
-                     style: ElevatedButton.styleFrom(
-                       backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.grey[100],
-                       foregroundColor: textColor,
-                       elevation: 0,
-                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                       padding: const EdgeInsets.symmetric(vertical: 8),
-                     ),
-                     child: const Text('Beli', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                   ),
-                 )
+                Text(product.name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: textColor), maxLines: 2, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(AppFormatter.formatCurrency(product.price), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: Consumer<OrderProvider>(
+                    builder: (context, orderProvider, child) {
+                      return ElevatedButton(
+                        onPressed: orderProvider.isLoading 
+                          ? null 
+                          : () async {
+                              final auth = Provider.of<AuthProvider>(context, listen: false);
+                               final success = await orderProvider.createOrder(
+                                auth.user?.uid ?? '', 
+                                product, 
+                                "Alamat Pengiriman Standar",
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(success ? "Pesanan berhasil dibuat!" : "Gagal membuat pesanan"), backgroundColor: success ? Colors.green : Colors.red)
+                                );
+                              }
+                           },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.grey[100],
+                          foregroundColor: textColor,
+                          elevation: 0,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        child: orderProvider.isLoading 
+                          ? const SizedBox(height: 12, width: 12, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Text('Beli', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -298,29 +330,9 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
      return Column(
        mainAxisAlignment: MainAxisAlignment.center,
        children: [
-         Icon(
-           icon,
-           color: isActive ? AppColors.primary : AppColors.textGray.withOpacity(0.6),
-           size: 26,
-         ),
-         const SizedBox(height: 2),
-         Text(
-           label,
-           style: TextStyle(
-             fontSize: 10,
-             fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-             color: isActive ? AppColors.primary : AppColors.textGray.withOpacity(0.6),
-           ),
-         )
+         Icon(icon, color: isActive ? AppColors.primary : AppColors.textGray.withOpacity(0.6), size: 24),
+         Text(label, style: TextStyle(fontSize: 10, fontWeight: isActive ? FontWeight.bold : FontWeight.w500, color: isActive ? AppColors.primary : AppColors.textGray.withOpacity(0.6))),
        ],
      );
-  }
-
-  String _formatCurrency(double price) {
-    final priceString = price.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
-      (Match m) => '${m[1]}.'
-    );
-    return 'Rp $priceString';
   }
 }

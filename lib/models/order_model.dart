@@ -5,6 +5,8 @@ class OrderModel {
   final String customerId;
   final String productName;
   final String destination;
+  final DateTime createdAt;
+  final String? courierId;
   final List<TrackingHistory> trackingHistory;
 
   OrderModel({
@@ -14,6 +16,8 @@ class OrderModel {
     required this.customerId,
     required this.productName,
     required this.destination,
+    required this.createdAt,
+    this.courierId,
     required this.trackingHistory,
   });
 
@@ -25,6 +29,8 @@ class OrderModel {
       'customer_id': customerId,
       'product_name': productName,
       'destination': destination,
+      'created_at': createdAt.toIso8601String(),
+      'courier_id': courierId,
       'tracking_history': trackingHistory.map((x) => x.toMap()).toList(),
     };
   }
@@ -37,6 +43,10 @@ class OrderModel {
       customerId: map['customer_id'] ?? '',
       productName: map['product_name'] ?? '',
       destination: map['destination'] ?? '',
+      createdAt: map['created_at'] != null 
+          ? DateTime.parse(map['created_at']) 
+          : DateTime.now(),
+      courierId: map['courier_id'],
       trackingHistory: List<TrackingHistory>.from(
         (map['tracking_history'] as List<dynamic>? ?? []).map<TrackingHistory>(
           (x) => TrackingHistory.fromMap(x as Map<String, dynamic>),
@@ -50,7 +60,7 @@ class TrackingHistory {
   final String status;
   final String description;
   final String location;
-  final String timestamp;
+  final DateTime timestamp;
   final String updatedBy;
   final String? proofUrl;
 
@@ -68,7 +78,7 @@ class TrackingHistory {
       'status': status,
       'description': description,
       'location': location,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toIso8601String(),
       'updated_by': updatedBy,
       'proof_url': proofUrl,
     };
@@ -79,7 +89,9 @@ class TrackingHistory {
       status: map['status'] ?? '',
       description: map['description'] ?? '',
       location: map['location'] ?? '',
-      timestamp: map['timestamp'] ?? '',
+      timestamp: map['timestamp'] != null 
+          ? DateTime.parse(map['timestamp']) 
+          : DateTime.now(),
       updatedBy: map['updated_by'] ?? '',
       proofUrl: map['proof_url'],
     );

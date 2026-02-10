@@ -16,6 +16,25 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // CHECK LOGIN STATUS (Middleware Logic)
+  Future<bool> checkLoginStatus() async {
+    final currentUser = _authService.currentUser;
+    if (currentUser != null) {
+      try {
+        // Ambil data terbaru dari Firestore
+        UserModel userData = await _authService.getUserData(currentUser.uid);
+        _user = userData;
+        notifyListeners();
+        return true;
+      } catch (e) {
+        // Jika gagal ambil data (misal dihapus), logout paksa
+        await logout();
+        return false;
+      }
+    }
+    return false;
+  }
+
   // LOGIN
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {

@@ -17,7 +17,7 @@ dependencies:
   firebase_core: ^4.4.0
   cloud_firestore: ^6.1.2
   firebase_auth: ^6.1.4
-  firebase_storage: ^14.0.0 # Upgrading to latest compatible
+  firebase_storage: ^13.0.6 # Downgrading to valid version
   flutter_dotenv: ^6.0.0
 
   # --- State Management ---

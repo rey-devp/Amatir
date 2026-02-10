@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
+import '../models/order_model.dart';
 import '../services/firestore_service.dart';
 
 class OrderProvider extends ChangeNotifier {
@@ -33,12 +34,31 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
+  Stream<List<OrderModel>> getOrdersByCustomer(String uid) {
+    return _firestoreService.getOrdersByCustomer(uid);
+  }
+
+  // Stream low-priority (available jobs)
+  Stream<List<OrderModel>> getAvailableJobs() {
+    return _firestoreService.getOrdersByStatus('pending');
+  }
+
+  Stream<List<OrderModel>> getOrdersByStatus(String status) {
+    return _firestoreService.getOrdersByStatus(status);
+  }
+
+  // Stream assigned tasks
+  Stream<List<OrderModel>> getOrdersByCourier(String uid) {
+    return _firestoreService.getOrdersByCourier(uid);
+  }
+
   Future<bool> updateStatus({
     required String orderId,
     required String status,
     required String description,
     required String location,
     required String updaterName,
+    String? proofUrl,
   }) async {
     try {
       await _firestoreService.updateOrderStatusWithHistory(
@@ -47,6 +67,7 @@ class OrderProvider extends ChangeNotifier {
         location,
         description,
         updaterName,
+        proofUrl: proofUrl,
       );
 
       notifyListeners();

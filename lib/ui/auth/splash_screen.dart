@@ -1,7 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../config/app_constants.dart';
-import 'login_page.dart';
+import 'package:provider/provider.dart';
+import '../../config/app_colors.dart';
+import '../../config/routes.dart';
+import '../../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,11 +32,29 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
 
-    // Navigation Timer
-    Timer(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
+    // Navigation Logic with Session Check
+    Future.delayed(const Duration(seconds: 3), () async {
+      if (!mounted) return;
+      
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final isLoggedIn = await authProvider.checkLoginStatus();
+
+      if (!mounted) return;
+
+      if (isLoggedIn) {
+        final role = authProvider.user?.role;
+        if (role == 'admin') {
+          Navigator.pushReplacementNamed(context, AppRoutes.adminDashboard);
+        } else if (role == 'courier') {
+          Navigator.pushReplacementNamed(context, AppRoutes.courierDashboard);
+        } else if (role == 'warehouse') {
+          Navigator.pushReplacementNamed(context, AppRoutes.warehouseDashboard);
+        } else {
+          Navigator.pushReplacementNamed(context, AppRoutes.customerHome);
+        }
+      } else {
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+      }
     });
   }
 

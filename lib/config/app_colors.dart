@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 
-class AppConstants {
-  static const String appName = 'LogiTrack';
-  static const String loginHeaderImageUrl = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAyeCgWV4b6G4_0eXN05ZyBAdDEUweS7HKez_BcYrXtd4tyJ4tNP9fGhd2fsdHzTLrn7hYk3EX8G7vVad5WAKHCqV1_8x5DAEZgCrnNPl8_i4j4KrlkQglEOS3q8wgpcxwxxHtti_qpXgEEgOqEgORonLm4Vr5_hlw_Z4rdfocegCW8nTttJdCNfBphht6eF5hG1U7JMmJzAXYn2lFQo9ql8jEoif-z_rDx20OIr0-xQ8BA-hPUZ0-1xg-4gDiOk45u388L3H30aUE';
-}
-
 class AppColors {
   static const Color primary = Color(0xFF13c8ec);
   static const Color backgroundLight = Color(0xFFf6f8f8);

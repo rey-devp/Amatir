@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../config/app_constants.dart';
-import 'user_list_page.dart';
+import 'package:provider/provider.dart';
+import '../../config/app_colors.dart';
+import '../../config/routes.dart';
+import '../../providers/admin_provider.dart';
+import '../../models/user_model.dart';
+import '../../models/order_model.dart';
+import '../../models/product_model.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -10,29 +15,17 @@ class AdminDashboardPage extends StatefulWidget {
 }
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
-  int _selectedIndex = 0; // "Home" selected
-
-  // MOCK DATA matching Contract for getDashboardSummary
-  final Map<String, dynamic> _dashboardData = {
-    'totalUsers': 1240,
-    'totalTransactions': 8502,
-    'totalRevenue': 45200,
-    'lowStockAlerts': [
-      {'name': 'Packaging Tape', 'stock': 5}
-    ]
-  };
-
   @override
   Widget build(BuildContext context) {
+    final adminProvider = Provider.of<AdminProvider>(context);
+    
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDarkMode = brightness == Brightness.dark;
 
-    // Colors
     final backgroundColor = isDarkMode ? AppColors.backgroundDark : AppColors.backgroundLight;
     final surfaceColor = isDarkMode ? const Color(0xFF1a2c32) : Colors.white;
     final textColor = isDarkMode ? AppColors.textLight : AppColors.textDark;
     final subTextColor = isDarkMode ? AppColors.textGrayDark : AppColors.textGray;
-    final borderColor = isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -45,310 +38,135 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             floating: true,
             elevation: 0,
             toolbarHeight: 70,
-            title: Row(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('LogiTrack', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
-                    Text('Admin Panel', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: subTextColor)),
-                  ],
-                ),
+                Text('LogiTrack', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                Text('Admin Panel', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: subTextColor)),
               ],
             ),
             actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: 40, height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.grey[200],
-                      ),
-                      child: Icon(Icons.notifications, color: textColor),
-                    ),
-                    const Positioned(
-                      top: 8, right: 8,
-                      child: CircleAvatar(radius: 4, backgroundColor: Colors.red),
-                    )
-                  ],
-                ),
-              )
+              IconButton(onPressed: () {}, icon: Icon(Icons.notifications_outlined, color: textColor)),
+              const SizedBox(width: 8)
             ],
           ),
 
           // 2. Greeting
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Hello, Admin', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
-                  const SizedBox(height: 4),
-                  Text('Here is your daily logistics summary.', style: TextStyle(fontSize: 14, color: subTextColor)),
+                  Text('Overview of LogiTrack Ecosystem', style: TextStyle(fontSize: 14, color: subTextColor)),
                 ],
               ),
             ),
           ),
 
-           // 3. Stats Section
+          // 3. Stats Section
           SliverToBoxAdapter(
             child: SizedBox(
-               height: 160, 
-               child: ListView(
-                 scrollDirection: Axis.horizontal,
-                 padding: const EdgeInsets.symmetric(horizontal: 16),
+               height: 140, 
+               child: Row(
                  children: [
-                    _buildStatsCard(
-                      'Total Users', 
-                      '${_dashboardData['totalUsers'] ?? 0}', 
-                      '+12%', 
-                      Icons.group, 
-                      surfaceColor, textColor, subTextColor, false
-                    ),
-                    const SizedBox(width: 12),
-                    _buildStatsCard(
-                      'Total Transactions', 
-                      '${_dashboardData['totalTransactions'] ?? 0}', 
-                      '+5%', 
-                      Icons.local_shipping, 
-                      surfaceColor, textColor, subTextColor, false
-                    ),
-                    const SizedBox(width: 12),
-                    _buildStatsCard(
-                      'Total Revenue', 
-                      '\$${_dashboardData['totalRevenue'] ?? 0}', 
-                      '+8%', 
-                      Icons.payments, 
-                      surfaceColor, textColor, subTextColor, true 
-                    ),
+                   const SizedBox(width: 16),
+                   Expanded(
+                     child: StreamBuilder<List<UserModel>>(
+                       stream: adminProvider.getUsers(),
+                       builder: (context, snapshot) {
+                         return _buildStatsCard('Users', '${snapshot.data?.length ?? '...'}', Icons.group, surfaceColor, textColor, subTextColor);
+                       },
+                     ),
+                   ),
+                   const SizedBox(width: 12),
+                   Expanded(
+                     child: StreamBuilder<List<OrderModel>>(
+                       stream: adminProvider.getAllOrders(),
+                       builder: (context, snapshot) {
+                         return _buildStatsCard('Orders', '${snapshot.data?.length ?? '...'}', Icons.local_shipping, surfaceColor, textColor, subTextColor);
+                       },
+                     ),
+                   ),
+                   const SizedBox(width: 12),
+                   Expanded(
+                     child: StreamBuilder<List<ProductModel>>(
+                       stream: adminProvider.getProducts(),
+                       builder: (context, snapshot) {
+                         return _buildStatsCard('Products', '${snapshot.data?.length ?? '...'}', Icons.inventory, surfaceColor, textColor, subTextColor);
+                       },
+                     ),
+                   ),
+                   const SizedBox(width: 16),
                  ],
                ),
             ),
           ),
 
-          // 4. Quick Actions Title
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                   Text('Quick Actions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
-                   Text('View All', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.primary)),
-                ],
-              ),
-            ),
-          ),
-
-          // 5. Quick Actions Grid
+          // 4. Quick Actions
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(16),
             sliver: SliverGrid.count(
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.1,
+              childAspectRatio: 1.3,
               children: [
-                  _buildActionCard(
-                    'Kelola User', 
-                    'Couriers & Customers', 
-                    Icons.manage_accounts, 
-                    surfaceColor, textColor, subTextColor,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UserListPage())),
-                  ),
-                  _buildActionCard('Kelola Produk', 'Stock & Categories', Icons.inventory_2, surfaceColor, textColor, subTextColor),
-                  _buildActionCard('Analytics', 'Performance Reports', Icons.bar_chart, surfaceColor, textColor, subTextColor),
-                  _buildActionCard('Settings', 'App Configuration', Icons.settings, surfaceColor, textColor, subTextColor),
+                  _buildActionCard('Manage Users', Icons.manage_accounts, surfaceColor, textColor, () => Navigator.pushNamed(context, AppRoutes.adminUsers)),
+                  _buildActionCard('Manage Products', Icons.inventory_2, surfaceColor, textColor, () => Navigator.pushNamed(context, AppRoutes.adminProducts)),
+                  _buildActionCard('Analytics', Icons.bar_chart, surfaceColor, textColor, () {}),
+                  _buildActionCard('Settings', Icons.settings, surfaceColor, textColor, () {}),
                 ],
               ),
             ),
-            
-            // 6. Recent Alert
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                child: Text('Recent Alert', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-              sliver: SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.orange.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40, height: 40,
-                        decoration: BoxDecoration(color: Colors.orange.withOpacity(0.2), shape: BoxShape.circle),
-                        child: const Icon(Icons.warning, color: Colors.orange),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                             const Text('Low Stock Alert', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)), // Force black text on orange bg
-                             Text(
-                               (_dashboardData['lowStockAlerts'] as List).isNotEmpty 
-                               ? 'Product "${(_dashboardData['lowStockAlerts'] as List)[0]['name']}" remains ${(_dashboardData['lowStockAlerts'] as List)[0]['stock']} items.'
-                               : 'No low stock alerts.',
-                               style: const TextStyle(fontSize: 12, color: Colors.black54)
-                             ),
-                          ],
-                        ),
-                      ),
+        ],
+      ),
+    );
+  }
 
-                      Icon(Icons.chevron_right, color: subTextColor),
-                    ],
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-  
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: surfaceColor,
-            border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.1))),
-          ),
-          child: SafeArea(
-            child: SizedBox(
-              height: 60,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(Icons.dashboard, 'Home', true),
-                  _buildNavItem(Icons.map, 'Map', false),
-                  _buildNavItem(Icons.chat, 'Messages', false),
-                  _buildNavItem(Icons.person, 'Profile', false),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-  
-    Widget _buildStatsCard(String title, String value, String growth, IconData icon, Color surfaceColor, Color textColor, Color subTextColor, bool isGradient) {
-      return Container(
-        width: 160,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isGradient ? null : surfaceColor,
-          gradient: isGradient ? const LinearGradient(colors: [Color(0xFF13c8ec), Color(0xFF0b8aacee)], begin: Alignment.topLeft, end: Alignment.bottomRight) : null,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: isGradient ? AppColors.primary.withOpacity(0.3) : Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
-          border: isGradient ? null : Border.all(color: Colors.grey.withOpacity(0.1)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-             Row(
-               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-               children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isGradient ? Colors.white.withOpacity(0.2) : AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: isGradient ? Colors.white : AppColors.primary, size: 20),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isGradient ? Colors.white.withOpacity(0.2) : Colors.green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                         Icon(Icons.trending_up, size: 12, color: isGradient ? Colors.white : Colors.green),
-                         const SizedBox(width: 2),
-                         Text(growth, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isGradient ? Colors.white : Colors.green)),
-                      ],
-                    ),
-                  )
-               ],
-             ),
-             Column(
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                  Text(title, style: TextStyle(fontSize: 12, color: isGradient ? Colors.white.withOpacity(0.9) : subTextColor)),
-                  const SizedBox(height: 4),
-                  Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isGradient ? Colors.white : textColor)),
-               ],
-             )
-          ],
-        ),
-      );
-    }
-  
-    Widget _buildActionCard(String title, String subtitle, IconData icon, Color surfaceColor, Color textColor, Color subTextColor, {VoidCallback? onTap}) {
-      return Material(
+  Widget _buildStatsCard(String title, String value, IconData icon, Color surfaceColor, Color textColor, Color subTextColor) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.withOpacity(0.1)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: AppColors.primary, size: 28),
-                ),
-                const SizedBox(height: 12),
-                Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
-                const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(fontSize: 10, color: subTextColor), textAlign: TextAlign.center),
-              ],
-            ),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          const Spacer(),
+          Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
+          Text(title, style: TextStyle(fontSize: 12, color: subTextColor)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionCard(String title, IconData icon, Color surfaceColor, Color textColor, VoidCallback onTap) {
+    return Material(
+      color: surfaceColor,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.withOpacity(0.1)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: AppColors.primary, size: 30),
+              const SizedBox(height: 8),
+              Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
+            ],
           ),
         ),
-      );
-    }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-     return Column(
-       mainAxisAlignment: MainAxisAlignment.center,
-       children: [
-         Icon(
-           icon,
-           color: isActive ? AppColors.primary : AppColors.textGray.withOpacity(0.6),
-           size: 26,
-         ),
-         const SizedBox(height: 2),
-         Text(
-           label,
-           style: TextStyle(
-             fontSize: 10,
-             fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-             color: isActive ? AppColors.primary : AppColors.textGray.withOpacity(0.6),
-           ),
-         )
-       ],
-     );
+      ),
+    );
   }
 }

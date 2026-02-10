@@ -1,35 +1,63 @@
 import 'package:flutter/material.dart';
 import '../ui/auth/splash_screen.dart';
 import '../ui/auth/login_page.dart';
-import '../ui/auth/register_page.dart';
 import '../ui/role_customer/home_customer_page.dart';
+import '../ui/role_customer/order_detail_customer.dart';
+import '../ui/role_customer/my_orders_page.dart';
 import '../ui/role_courier/dashboard_courier.dart';
+import '../ui/role_courier/delivery_execution_page.dart';
+import '../ui/role_courier/scanner_page.dart';
 import '../ui/role_warehouse/dashboard_warehouse.dart';
 import '../ui/role_admin/admin_dashboard.dart';
 import '../ui/role_admin/user_list_page.dart';
+import '../ui/role_admin/product_list_page.dart';
 
+/// Centralized route definitions for LogiTrack.
+///
+/// Pages that require constructor arguments (e.g. UpdatePackageLocationPage)
+/// are navigated to via MaterialPageRoute and are NOT registered here.
 class AppRoutes {
-  static const String splash = '/';
+  static const String splash = '/splash';
   static const String login = '/login';
-  static const String register = '/register';
-  
-  // Rute Peran
-  static const String homeCustomer = '/home-customer';
-  static const String dashboardCourier = '/dashboard-courier';
-  static const String dashboardWarehouse = '/dashboard-warehouse';
-  static const String dashboardAdmin = '/dashboard-admin';
-  static const String userList = '/user-list';
 
-  // Map Rute ke Widget
+  // Admin
+  static const String adminDashboard = '/admin-dashboard';
+  static const String adminUsers = '/admin-users';
+  static const String adminProducts = '/admin-products';
+
+  // Courier
+  static const String courierDashboard = '/courier-dashboard';
+  static const String courierScan = '/courier-scan';
+  static const String courierDelivery = '/courier-delivery-execution';
+
+  // Customer
+  static const String customerHome = '/customer-home';
+  static const String customerOrders = '/customer-orders';
+  static const String customerOrderDetail = '/customer-order-detail';
+
+  // Warehouse
+  static const String warehouseDashboard = '/warehouse-dashboard';
+
   static Map<String, WidgetBuilder> get routes => {
     splash: (context) => const SplashScreen(),
     login: (context) => const LoginPage(),
-    register: (context) => const RegisterPage(),
-    
-    homeCustomer: (context) => const HomeCustomerPage(),
-    dashboardCourier: (context) => const DashboardCourier(),
-    dashboardWarehouse: (context) => const DashboardWarehouse(),
-    dashboardAdmin: (context) => const AdminDashboard(),
-    userList: (context) => const UserListPage(),
+
+    // Admin
+    adminDashboard: (context) => const AdminDashboardPage(),
+    adminUsers: (context) => const UserListPage(),
+    adminProducts: (context) => const ProductListPage(),
+
+    // Courier
+    courierDashboard: (context) => const DashboardCourierPage(),
+    courierScan: (context) => const CourierScannerPage(),
+    courierDelivery: (context) => const DeliveryExecutionPage(),
+
+    // Customer
+    customerHome: (context) => const HomeCustomerPage(),
+    customerOrders: (context) => const MyOrdersPage(),
+    customerOrderDetail: (context) => const OrderDetailCustomerPage(),
+
+    // Warehouse
+    warehouseDashboard: (context) => const DashboardWarehousePage(),
   };
 }

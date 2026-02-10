@@ -1,94 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../config/app_constants.dart';
-
-// Local Data Model for Tracking Timeline
-// Local Data Model matching API Contract Response for getOrderDetail
-class _TimelineItem {
-  final String status;
-  final String description;
-  final String location;
-  final String timestamp; // Contract: datetime string
-  final String? updatedBy;
-
-  _TimelineItem({
-    required this.status,
-    required this.description,
-    required this.location,
-    required this.timestamp,
-    this.updatedBy,
-  });
-
-  factory _TimelineItem.fromMap(Map<String, dynamic> map) {
-    return _TimelineItem(
-      status: map['status'] ?? '',
-      description: map['description'] ?? '',
-      location: map['location'] ?? '',
-      timestamp: map['timestamp'] ?? '',
-      updatedBy: map['updatedBy'],
-    );
-  }
-}
-
-class _CourierInfo {
-  final String name;
-  final String phone;
-  final String imageUrl; // Not in contract example but usually needed for UI
-
-  _CourierInfo({required this.name, required this.phone, required this.imageUrl});
-
-  factory _CourierInfo.fromMap(Map<String, dynamic> map) {
-    return _CourierInfo(
-      name: map['name'] ?? '',
-      phone: map['phone'] ?? '',
-      imageUrl: map['imageUrl'] ?? '',
-    );
-  }
-}
-
-class _OrderDetail {
-  final String trackingId;
-  final String currentStatus;
-  final String estimatedArrival;
-  final List<_TimelineItem> timeline;
-  final _CourierInfo? courier;
-
-  _OrderDetail({
-    required this.trackingId,
-    required this.currentStatus,
-    required this.estimatedArrival,
-    required this.timeline,
-    this.courier,
-  });
-
-  factory _OrderDetail.fromMap(Map<String, dynamic> map) {
-    return _OrderDetail(
-      trackingId: map['trackingId'] ?? '',
-      currentStatus: map['currentStatus'] ?? '',
-      estimatedArrival: map['estimatedArrival'] ?? '',
-      timeline: (map['timeline'] as List?)?.map((e) => _TimelineItem.fromMap(e)).toList() ?? [],
-      courier: map['courier'] != null ? _CourierInfo.fromMap(map['courier']) : null,
-    );
-  }
-}
-
-// Internal UI Model for Widget Builder (keeping existing logic for rendering)
-class _TrackingStep {
-  final String title;
-  final String description;
-  final String time;
-  final bool isCompleted;
-  final bool isCurrent;
-  final _CourierInfo? courierInfo; // Pass courier info here if needed
-
-  _TrackingStep({
-    required this.title,
-    required this.description,
-    required this.time,
-    this.isCompleted = false,
-    this.isCurrent = false,
-    this.courierInfo,
-  });
-}
+import '../../config/app_colors.dart';
+import '../../models/order_model.dart';
+import '../widgets/tracking_timeline.dart';
 
 class OrderDetailCustomerPage extends StatefulWidget {
   const OrderDetailCustomerPage({super.key});
@@ -98,91 +11,30 @@ class OrderDetailCustomerPage extends StatefulWidget {
 }
 
 class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
-  
-  // MOCK RAW RESPONSE from CustomerProvider.getOrderDetail()
-  final Map<String, dynamic> _mockApiResponse = {
-    'trackingId': 'LOGI-8839201',
-    'currentStatus': 'Out for Delivery',
-    'estimatedArrival': 'Today, 16:00',
-    'timeline': [
-      {
-        'status': 'Out for Delivery',
-        'description': 'Your package is on the way with our courier.',
-        'location': 'Jakarta Selatan',
-        'timestamp': '13:45 PM',
-        'updatedBy': 'Budi Santoso'
-      },
-      {
-        'status': 'Departed from Hub',
-        'description': 'Package has left the facility',
-        'location': 'Jakarta Central Hub',
-        'timestamp': '10:00 AM',
-        'updatedBy': 'System'
-      },
-      {
-        'status': 'Arrived at Warehouse',
-        'description': 'Package sorted at facility',
-        'location': 'Jakarta Central Warehouse',
-        'timestamp': 'Yesterday, 22:00',
-        'updatedBy': 'System'
-      },
-      {
-        'status': 'Order Placed',
-        'description': 'Order has been created',
-        'location': 'Online Store',
-        'timestamp': 'Yesterday, 09:00',
-        'updatedBy': 'Customer'
-      }
-    ],
-    'courier': {
-      'name': 'Budi Santoso',
-      'phone': '081234567890',
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAujIbPjH8524m9DcL-mNRCL0spYICOoNpx7AYp2TU8QUicMrHO8sclRH-s6oBAMqGPq9EMcmAVI-6MpH31X9n95y01HjGtaxjrz7Y086vlXSOTskAY2IkujfLu06PlOJpjtXqmleOgZlWWZkgTDz9SmzF0gtVgzHcjdb3CJ6gFonkNN5F1kRRfbOTi3kStTSXakgPTU5ogH01BLPTjNyr4mJl-PEp93qg7r4c1qSCKHaupU7sSIgJPqWECRjCz1_ia5LmGF4JiAOA'
-    }
-  };
-
-  late _OrderDetail _orderDetail;
-  late List<_TrackingStep> _steps;
+  OrderModel? _order;
 
   @override
-  void initState() {
-    super.initState();
-    // Simulate Parsing
-    _orderDetail = _OrderDetail.fromMap(_mockApiResponse);
-    
-    // Convert to UI Steps
-    _steps = _orderDetail.timeline.map((item) {
-      final isCurrent = item.status == _orderDetail.currentStatus;
-      // In a real app, logic for 'isCompleted' would compare timestamps or status order
-      // Here we assume items passed are completed or current
-      final isCompleted = true; 
-
-      return _TrackingStep(
-        title: item.status,
-        description: '${item.description} - ${item.location}',
-        time: item.timestamp,
-        isCurrent: isCurrent,
-        isCompleted: isCompleted,
-        courierInfo: isCurrent ? _orderDetail.courier : null,
-      );
-    }).toList();
-  }
-
-  Widget _buildCourierInfo() {
-    // This widget needs access to context/theme, but we can return a builder or just structure it to be built in build()
-    // For simplicity, we'll return a container and style it in the build method or use generic styles.
-    // Instead of returning a Widget here that might need context, let's just use a flag or separate method in build.
-    return Container(); 
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is OrderModel) {
+      _order = args;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_order == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Order Details')),
+        body: const Center(child: Text('Data pesanan tidak ditemukan')),
+      );
+    }
+
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDarkMode = brightness == Brightness.dark;
 
-     // Colors
     final backgroundColor = isDarkMode ? AppColors.backgroundDark : AppColors.backgroundLight;
-    final surfaceColor = isDarkMode ? AppColors.surfaceDark : AppColors.surfaceLight;
     final textColor = isDarkMode ? AppColors.textLight : AppColors.textDark;
     final subTextColor = isDarkMode ? AppColors.textGrayDark : AppColors.textGray;
     final borderColor = isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
@@ -213,7 +65,7 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                       ),
                     ),
                   ),
-                  Text('Order Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                  Text('Detail Pesanan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                   Container(
                     width: 40, height: 40,
                     decoration: BoxDecoration(
@@ -232,109 +84,57 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    // Hero Status Card with Map
+                    // Hero Status Card
                     Container(
                       decoration: BoxDecoration(
-                        color: surfaceColor,
+                        color: isDarkMode ? AppColors.surfaceDark : AppColors.surfaceLight,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
                       ),
                       clipBehavior: Clip.antiAlias,
-                      child: Column(
-                        children: [
-                          // Map Preview
-                          SizedBox(
-                            height: 128,
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                Image.network(
-                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuDdUNOyL083Orvk-TTsLhiwh470rjG33uwoA--CeU7THXaLJkOt1Zbm9JuwafDTgu6SZGL9gFq0JpElYlT3xMOq_T_niaPcjpxs8tJ-2psdbyGtaGAYafJyrAs0-mQspUr23qoYEFLeeuYbe9Xa_W9yiq8CjuRvW1fxEtal6h7aVG0cSI6g18gAxpIjc1ey7O6amYqZnYOMntSZTwDeZBYool0GiZFL0XjVaerviLUtZhteirvmWh56594MwAwf5O797Ct0F9JSsj4',
-                                  fit: BoxFit.cover,
-                                  color: Colors.white.withOpacity(0.8),
-                                  colorBlendMode: BlendMode.modulate,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
-                                      colors: [surfaceColor, Colors.transparent],
-                                    )
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 16, left: 16,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8)],
-                                    ),
-                                    child: const Icon(Icons.local_shipping, color: Colors.black, size: 20),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Card Content
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('TRACKING ID', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subTextColor, letterSpacing: 0.5)),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            Text(_orderDetail.trackingId, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
-                                            const SizedBox(width: 8),
-                                            Icon(Icons.content_copy, size: 16, color: subTextColor),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Text('EST. ARRIVAL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subTextColor, letterSpacing: 0.5)),
-                                        const SizedBox(height: 4),
-                                        Text(_orderDetail.estimatedArrival, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('On the way', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: textColor)),
-                                    Text('3 of 4 steps', style: TextStyle(fontSize: 12, color: subTextColor)),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  height: 8,
-                                  decoration: BoxDecoration(color: isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade200, borderRadius: BorderRadius.circular(4)),
-                                  child: FractionallySizedBox(
-                                    widthFactor: 0.75,
-                                    alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(4)),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                             Row(
+                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                               children: [
+                                 Column(
+                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                   children: [
+                                     Text('TRACKING ID', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subTextColor, letterSpacing: 0.5)),
+                                     const SizedBox(height: 4),
+                                     Text(_order!.trackingId, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                                   ],
+                                 ),
+                                 Container(
+                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                   decoration: BoxDecoration(
+                                     color: AppColors.primary.withOpacity(0.1),
+                                     borderRadius: BorderRadius.circular(8),
+                                   ),
+                                   child: Text(_order!.status.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                                 )
+                               ],
+                             ),
+                             const SizedBox(height: 16),
+                             Row(
+                               children: [
+                                 const Icon(Icons.inventory_2_outlined, size: 16, color: AppColors.primary),
+                                 const SizedBox(width: 8),
+                                 Text(_order!.productName, style: TextStyle(fontSize: 14, color: textColor, fontWeight: FontWeight.w500)),
+                               ],
+                             ),
+                             const SizedBox(height: 8),
+                             Row(
+                               children: [
+                                 const Icon(Icons.location_on_outlined, size: 16, color: AppColors.primary),
+                                 const SizedBox(width: 8),
+                                 Expanded(child: Text(_order!.destination, style: TextStyle(fontSize: 14, color: subTextColor))),
+                               ],
+                             ),
+                          ],
+                        ),
                       ),
                     ),
                     
@@ -343,67 +143,15 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
                     // Timeline Section
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Tracking History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                      child: Text('Riwayat Pengiriman', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                     ),
                     const SizedBox(height: 16),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _steps.length,
-                      itemBuilder: (context, index) {
-                        return _buildTimelineStep(_steps[index], index == _steps.length - 1, textColor, subTextColor, surfaceColor, isDarkMode);
-                      },
+                    TrackingTimeline(
+                      history: _order!.trackingHistory,
+                      isDarkMode: isDarkMode,
                     ),
 
-                    const SizedBox(height: 16),
-                    
-                    // Proof of Delivery Section
-                    // Proof of Delivery Section
-                    if (_steps.any((s) => s.title == 'Delivered' && s.isCompleted)) ...[
-                       Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: surfaceColor,
-                          borderRadius: BorderRadius.circular(16),
-                           border: Border.all(color: borderColor),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.image, color: AppColors.primary, size: 20),
-                                      const SizedBox(width: 8),
-                                      Text('Proof of Delivery', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text('Status', style: TextStyle(fontSize: 12, color: subTextColor)),
-                                  Text('Delivered', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 80, height: 80,
-                              decoration: BoxDecoration(
-                                 color: isDarkMode ? const Color(0xFF111f22) : Colors.grey.shade100,
-                                 borderRadius: BorderRadius.circular(8),
-                                 border: Border.all(color: isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade300, style: BorderStyle.none), 
-                                 image: const DecorationImage(
-                                    image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDxtFKzec-nGXMw0-8_9fDaOaThmpDrE2HveRt85-YLnAEcjt09YlOr0a8-Zhkb8yDqCaxjtC-ngR7SjsRT1ld0WDVUulzk6906LXTR1P6Ii3C0XBaHdR4uoEghokE2ywa-WnJr7urL7uC22dR3XQc_c816Mi3QCvtC6gFn_jWemdK1mWgMXxxTWKvlJ9pFMSLOy1LRCPhWXfL7CB8VdJJe9JRDat93dpHf7EbJs_zNS_mUmIMsXqO3cVtwRqP5lMnxefTcbrzx0-Q'),
-                                    fit: BoxFit.cover,
-                                 )
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                    
-                    const SizedBox(height: 80), // Bottom padding
+                    const SizedBox(height: 80), 
                   ],
                 ),
               ),
@@ -411,7 +159,7 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
           ],
         ),
       ),
-      bottomSheet: Container(
+      bottomSheet: _order!.status == 'delivered' ? Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: backgroundColor.withOpacity(0.95),
@@ -421,7 +169,9 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
           width: double.infinity,
           height: 50,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              // TODO: Implement confirmation logic
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.backgroundDark,
@@ -438,102 +188,7 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTimelineStep(_TrackingStep step, bool isLast, Color textColor, Color subTextColor, Color surfaceColor, bool isDarkMode) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-           // Timeline Line & Dot
-           SizedBox(
-             width: 40,
-             child: Column(
-               children: [
-                 Container(
-                   width: 16, height: 16,
-                   decoration: BoxDecoration(
-                     color: step.isCurrent ? AppColors.primary : (step.isCompleted ? (isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade300) : Colors.grey.shade200),
-                     shape: BoxShape.circle,
-                     // ring effect for current
-                     border: step.isCurrent ? Border.all(color: isDarkMode ? AppColors.backgroundDark : Colors.white, width: 2) : null,
-                     boxShadow: step.isCurrent ? [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 4)] : [],
-                   ),
-                   child: step.isCurrent ? Center(child: Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle))) : null,
-                 ),
-                 if (!isLast)
-                   Expanded(
-                     child: Container(
-                       width: 2,
-                       color: step.isCurrent ? AppColors.primary : (isDarkMode ? const Color(0xFF325e67) : Colors.grey.shade200),
-                     ),
-                   )
-               ],
-             ),
-           ),
-           // Content
-           Expanded(
-             child: Padding(
-               padding: const EdgeInsets.only(bottom: 24, left: 4),
-               child: Column(
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [
-                    Text(step.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: step.isCurrent ? AppColors.primary : textColor.withOpacity(step.isCompleted || step.isCurrent ? 1 : 0.4))),
-                    Text(step.description, style: TextStyle(fontSize: 14, color: isDarkMode ? (step.isCurrent ? const Color(0xFF92c0c9) : subTextColor) : Colors.grey[600] )),
-                    
-                    // Extra Content (Courier Info)
-                    if (step.courierInfo != null) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.withOpacity(0.05)),
-                        ),
-                        child: Row(
-                          children: [
-                             Container(
-                               width: 40, height: 40,
-                               decoration: BoxDecoration(
-                                 color: Colors.grey.shade200,
-                                 shape: BoxShape.circle,
-                                 image: DecorationImage(
-                                   image: NetworkImage(step.courierInfo!.imageUrl),
-                                   fit: BoxFit.cover,
-                                 ),
-                               ),
-                             ),
-                             const SizedBox(width: 12),
-                             Expanded(
-                               child: Column(
-                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                 children: [
-                                   Text(step.courierInfo!.name, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
-                                   Text('Courier', style: TextStyle(fontSize: 12, color: subTextColor)),
-                                 ],
-                               ),
-                             ),
-                             CircleAvatar(
-                               backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.grey.shade100,
-                               radius: 18,
-                               child: const Icon(Icons.call, color: AppColors.primary, size: 18),
-                             )
-                          ],
-                        ),
-                      )
-                    ],
-
-                    const SizedBox(height: 4),
-                    Text(step.time, style: const TextStyle(fontSize: 12, color: AppColors.textGray, fontWeight: FontWeight.w500)),
-                 ],
-               ),
-             ),
-           )
-        ],
-      ),
+      ) : null,
     );
   }
 }

@@ -23,6 +23,13 @@ class FirestoreService {
     }
   }
 
+  // GET ALL USERS (Untuk Admin)
+  Stream<List<UserModel>> getAllUsers() {
+    return _usersRef.snapshots().map((snapshot) => snapshot.docs
+        .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>))
+        .toList());
+  }
+
   // ================= PRODUCTS =================
   Stream<List<ProductModel>> getProducts() {
     return _productsRef.snapshots().map((snapshot) => snapshot.docs
@@ -42,20 +49,21 @@ class FirestoreService {
     String trackingId = "TRX-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}";
 
     TrackingHistory firstHistory = TrackingHistory(
-      status: 'created',
+      status: 'pending',
       description: 'Pesanan berhasil dibuat',
       location: 'Online System',
-      timestamp: DateTime.now().toString(),
+      timestamp: DateTime.now(),
       updatedBy: uid,
     );
 
     OrderModel newOrder = OrderModel(
       orderId: orderId,
       trackingId: trackingId,
-      status: 'created',
+      status: 'pending', 
       customerId: uid,
       productName: product.name,
       destination: destination,
+      createdAt: DateTime.now(),
       trackingHistory: [firstHistory],
     );
 
@@ -64,42 +72,53 @@ class FirestoreService {
 
   // UPDATE STATUS DENGAN TRANSACTION (GABUNGAN HISTORY)
   Future<void> updateOrderStatusWithHistory(
-      String orderId, String newStatus, String location, String description, String updatedBy) async {
+      String orderId, String newStatus, String location, String description, String updatedBy, {String? proofUrl}) async {
     final docRef = _ordersRef.doc(orderId);
 
     await _db.runTransaction((transaction) async {
       final snapshot = await transaction.get(docRef);
       if (!snapshot.exists) throw Exception("Order not found!");
 
-      // PERBAIKAN UTAMA DI SINI (Casting Data)
       final data = snapshot.data() as Map<String, dynamic>?;
       
-      // Gunakan key 'tracking_history' sesuai format di database
       List<dynamic> currentHistory = data?['tracking_history'] ?? [];
       
-      // Tambah history baru
       currentHistory.add({
         'status': newStatus,
         'description': description,
         'location': location,
         'timestamp': DateTime.now().toIso8601String(),
-        'updated_by': updatedBy, // Sesuaikan dengan key toMap
+        'updated_by': updatedBy,
+        'proof_url': proofUrl,
       });
 
       transaction.update(docRef, {
         'status': newStatus,
-        'tracking_history': currentHistory, // Sesuaikan key
+        'tracking_history': currentHistory,
         'current_location': location, 
         'updated_at': FieldValue.serverTimestamp(),
+        'courier_id': updatedBy, 
+        if (proofUrl != null) 'proof_url': proofUrl,
       });
     });
+  }
+
+  // GET ORDERS BY COURIER
+  Stream<List<OrderModel>> getOrdersByCourier(String uid) {
+    return _ordersRef
+        .where('courier_id', isEqualTo: uid)
+        .orderBy('created_at', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
+            .toList());
   }
 
   // GET ORDERS BY CUSTOMER
   Stream<List<OrderModel>> getOrdersByCustomer(String uid) {
     return _ordersRef
-        .where('customer_id', isEqualTo: uid) // Key di firebase biasanya snake_case
-        .orderBy('created_at', descending: true) // Pastikan key sorting benar (opsional, hapus orderBy jika error index)
+        .where('customer_id', isEqualTo: uid)
+        .orderBy('created_at', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
@@ -110,6 +129,7 @@ class FirestoreService {
   Stream<List<OrderModel>> getOrdersByStatus(String status) {
     return _ordersRef
         .where('status', isEqualTo: status)
+        .orderBy('created_at', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromMap(doc.data() as Map<String, dynamic>))
