@@ -11,6 +11,7 @@ import '../ui/role_warehouse/dashboard_warehouse.dart';
 import '../ui/role_admin/admin_dashboard.dart';
 import '../ui/role_admin/user_list_page.dart';
 import '../ui/role_admin/product_list_page.dart';
+import '../ui/role_admin/order_list_page.dart';
 
 /// Centralized route definitions for LogiTrack.
 ///
@@ -24,6 +25,7 @@ class AppRoutes {
   static const String adminDashboard = '/admin-dashboard';
   static const String adminUsers = '/admin-users';
   static const String adminProducts = '/admin-products';
+  static const String adminOrders = '/admin-orders';
 
   // Courier
   static const String courierDashboard = '/courier-dashboard';
@@ -46,6 +48,7 @@ class AppRoutes {
     adminDashboard: (context) => const AdminDashboardPage(),
     adminUsers: (context) => const UserListPage(),
     adminProducts: (context) => const ProductListPage(),
+    adminOrders: (context) => const OrderListPage(),
 
     // Courier
     courierDashboard: (context) => const DashboardCourierPage(),

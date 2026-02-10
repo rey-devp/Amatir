@@ -70,15 +70,7 @@ class _UserListPageState extends State<UserListPage> {
                     ),
                   ),
                   const Spacer(),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add, color: textColor),
-                    style: IconButton.styleFrom(
-                      backgroundColor: isDarkMode
-                          ? Colors.white.withOpacity(0.1)
-                          : Colors.black.withOpacity(0.05),
-                    ),
-                  ),
+                  // Add User button removed as per request
                 ],
               ),
             ),

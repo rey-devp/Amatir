@@ -44,9 +44,7 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
         ? AppColors.textGrayDark
         : AppColors.textGray;
     final cardColor = isDarkMode ? const Color(0xFF16282b) : Colors.white;
-    final borderColor = isDarkMode
-        ? Colors.white.withOpacity(0.05)
-        : Colors.black.withOpacity(0.05);
+    final cardColor = isDarkMode ? const Color(0xFF16282b) : Colors.white;
 
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
@@ -141,45 +139,8 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
             ),
           ),
 
-          // 2. Tabs
-          SliverToBoxAdapter(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  _buildTabItem(
-                    "Semua",
-                    _selectedCategory == "Semua",
-                    isDarkMode,
-                  ),
-                  _buildTabItem(
-                    "Elektronik",
-                    _selectedCategory == "Elektronik",
-                    isDarkMode,
-                  ),
-                  _buildTabItem(
-                    "Fashion",
-                    _selectedCategory == "Fashion",
-                    isDarkMode,
-                  ),
-                  _buildTabItem(
-                    "Health",
-                    _selectedCategory == "Health",
-                    isDarkMode,
-                  ),
-                  const SizedBox(width: 16),
-                  Container(width: 1, height: 24, color: borderColor),
-                  const SizedBox(width: 16),
-                  _buildTabItem(
-                    "Pesanan Saya",
-                    _selectedCategory == "Pesanan Saya",
-                    isDarkMode,
-                  ),
-                ],
-              ),
-            ),
-          ),
+          // 2. Tabs Removed as per feedback
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
           // 3. Grid or List Content
           if (_selectedCategory == "Pesanan Saya")
@@ -235,33 +196,6 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTabItem(String label, bool isSelected, bool isDarkMode) {
-    return GestureDetector(
-      onTap: () => setState(() => _selectedCategory = label),
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : (isDarkMode
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.grey[200]),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected
-                ? Colors.black
-                : (isDarkMode ? Colors.white : Colors.black),
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),

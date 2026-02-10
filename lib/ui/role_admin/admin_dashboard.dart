@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/routes.dart';
 import '../../providers/admin_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/user_model.dart';
 import '../../models/order_model.dart';
 import '../../models/product_model.dart';
@@ -65,8 +66,23 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
             actions: [
               IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.notifications_outlined, color: textColor),
+                onPressed: () {
+                  // Logout logic
+                  Provider.of<AdminProvider>(
+                    context,
+                    listen: false,
+                  ).logout(); // Assuming AdminProvider or AuthProvider has logout
+                  // Actually AuthProvider handles logout usually, let's check.
+                  // Redirect to login
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.login,
+                    (route) => false,
+                  );
+                },
+                icon: const Icon(Icons.logout),
+                color: textColor,
+                tooltip: 'Logout',
               ),
               const SizedBox(width: 8),
             ],
@@ -178,6 +194,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   surfaceColor,
                   textColor,
                   () => Navigator.pushNamed(context, AppRoutes.adminProducts),
+                ),
+                _buildActionCard(
+                  'Manage Orders',
+                  Icons.shopping_bag,
+                  surfaceColor,
+                  textColor,
+                  () => Navigator.pushNamed(context, AppRoutes.adminOrders),
                 ),
               ],
             ),

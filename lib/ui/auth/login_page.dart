@@ -16,6 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>(); // Added GlobalKey
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -157,228 +158,241 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 24),
 
                   // Login Form
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Email Field
-                      Text(
-                        'Email',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isDarkMode ? Colors.white70 : Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _emailController,
-                        style: TextStyle(color: textColor),
-                        decoration: InputDecoration(
-                          hintText: 'user@email.com',
-                          hintStyle: TextStyle(color: placeholderColor),
-                          filled: true,
-                          fillColor: inputBg,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: inputBorder),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: inputBorder),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: AppColors.primary,
-                              width: 2,
-                            ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Email Field
+                        Text(
+                          'Email',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: isDarkMode ? Colors.white70 : Colors.black87,
                           ),
                         ),
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Password Field
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Password',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: isDarkMode
-                                  ? Colors.white70
-                                  : Colors.black87,
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _emailController,
+                          style: TextStyle(color: textColor),
+                          decoration: InputDecoration(
+                            hintText: 'user@email.com',
+                            hintStyle: TextStyle(color: placeholderColor),
+                            filled: true,
+                            fillColor: inputBg,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 16,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: inputBorder),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: inputBorder),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: AppColors.primary,
+                                width: 2,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_isPasswordVisible,
-                        style: TextStyle(color: textColor),
-                        decoration: InputDecoration(
-                          hintText: '••••••••',
-                          hintStyle: TextStyle(color: placeholderColor),
-                          filled: true,
-                          fillColor: inputBg,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: inputBorder),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: inputBorder),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: AppColors.primary,
-                              width: 2,
-                            ),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: placeholderColor,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-                      const SizedBox(height: 24),
-                      const SizedBox(height: 16),
-
-                      // Login Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            // 1. Validasi Input
-                            if (_emailController.text.isEmpty ||
-                                _passwordController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Email dan Password harus diisi',
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Email tidak boleh kosong';
                             }
+                            if (!RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            ).hasMatch(value)) {
+                              return 'Format email tidak valid';
+                            }
+                            return null;
+                          },
+                        ),
 
-                            // 2. Tampilkan Loading
-                            setState(() => _isLoading = true);
+                        const SizedBox(height: 20),
 
-                            // Panggil Provider (Real Logic)
-                            final authProvider = Provider.of<AuthProvider>(
-                              context,
-                              listen: false,
-                            );
-                            final result = await authProvider.login(
-                              _emailController.text,
-                              _passwordController.text,
-                            );
+                        // Password Field
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Password',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
+                          style: TextStyle(color: textColor),
+                          decoration: InputDecoration(
+                            hintText: '••••••••',
+                            hintStyle: TextStyle(color: placeholderColor),
+                            filled: true,
+                            fillColor: inputBg,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 16,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: inputBorder),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: inputBorder),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: AppColors.primary,
+                                width: 2,
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: placeholderColor,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Password tidak boleh kosong';
+                            }
+                            if (value.length < 6) {
+                              return 'Password minimal 6 karakter';
+                            }
+                            return null;
+                          },
+                        ),
 
-                            if (!mounted) return;
-                            setState(() => _isLoading = false);
+                        const SizedBox(height: 8),
+                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
 
-                            // 3. Cek Response
-                            if (result['error'] == null) {
-                              // SUKSES
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(result['message']),
-                                  backgroundColor: Colors.green,
-                                ),
+                        // Login Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              // 1. Validasi Input
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
+
+                              // 2. Tampilkan Loading
+                              setState(() => _isLoading = true);
+
+                              // Panggil Provider (Real Logic)
+                              final authProvider = Provider.of<AuthProvider>(
+                                context,
+                                listen: false,
+                              );
+                              final result = await authProvider.login(
+                                _emailController.text,
+                                _passwordController.text,
                               );
 
-                              // Redirect based on Role
-                              final user = result['data'] as UserModel;
-                              // Note: result['data'] is UserModel object from Provider
-                              final role = user.role;
+                              if (!mounted) return;
+                              setState(() => _isLoading = false);
 
-                              if (role == 'admin') {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  AppRoutes.adminDashboard,
+                              // 3. Cek Response
+                              if (result['error'] == null) {
+                                // SUKSES
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(result['message']),
+                                    backgroundColor: Colors.green,
+                                  ),
                                 );
-                              } else if (role == 'courier') {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  AppRoutes.courierDashboard,
-                                );
-                              } else if (role == 'warehouse') {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  AppRoutes.warehouseDashboard,
-                                );
+
+                                // Redirect based on Role
+                                final user = result['data'] as UserModel;
+                                final role = user.role;
+
+                                if (role == 'admin') {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    AppRoutes.adminDashboard,
+                                  );
+                                } else if (role == 'courier') {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    AppRoutes.courierDashboard,
+                                  );
+                                } else if (role == 'warehouse') {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    AppRoutes.warehouseDashboard,
+                                  );
+                                } else {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    AppRoutes.customerHome,
+                                  );
+                                }
                               } else {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  AppRoutes.customerHome,
+                                // GAGAL
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(result['error']),
+                                    backgroundColor: Colors.red,
+                                  ),
                                 );
                               }
-                            } else {
-                              // GAGAL
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(result['error']),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: AppColors.backgroundDark,
-                            elevation: 5,
-                            shadowColor: AppColors.primary.withOpacity(0.2),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: AppColors.backgroundDark,
+                              elevation: 5,
+                              shadowColor: AppColors.primary.withOpacity(0.2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.backgroundDark,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    'LOGIN',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                           ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.backgroundDark,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text(
-                                  'LOGIN',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
 
                   const SizedBox(height: 32),
