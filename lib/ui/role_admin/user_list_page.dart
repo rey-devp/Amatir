@@ -15,7 +15,13 @@ class UserListPage extends StatefulWidget {
 class _UserListPageState extends State<UserListPage> {
   final TextEditingController _searchController = TextEditingController();
   int _selectedFilterIndex = 0;
-  final List<String> _filters = ['All', 'Admin', 'Courier', 'Warehouse', 'Customer'];
+  final List<String> _filters = [
+    'All',
+    'Admin',
+    'Courier',
+    'Warehouse',
+    'Customer',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +29,17 @@ class _UserListPageState extends State<UserListPage> {
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDarkMode = brightness == Brightness.dark;
 
-    final backgroundColor = isDarkMode ? AppColors.backgroundDark : AppColors.backgroundLight;
+    final backgroundColor = isDarkMode
+        ? AppColors.backgroundDark
+        : AppColors.backgroundLight;
     final surfaceColor = isDarkMode ? const Color(0xFF172a2d) : Colors.white;
     final textColor = isDarkMode ? AppColors.textLight : AppColors.textDark;
-    final subTextColor = isDarkMode ? AppColors.textGrayDark : AppColors.textGray;
-    final borderColor = isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05);
+    final subTextColor = isDarkMode
+        ? AppColors.textGrayDark
+        : AppColors.textGray;
+    final borderColor = isDarkMode
+        ? Colors.white.withOpacity(0.05)
+        : Colors.black.withOpacity(0.05);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -39,27 +51,38 @@ class _UserListPageState extends State<UserListPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                   IconButton(
+                  IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(Icons.arrow_back, color: textColor),
                     style: IconButton.styleFrom(
-                      backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                      backgroundColor: isDarkMode
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.black.withOpacity(0.05),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Text('Manage Users', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(
+                    'Manage Users',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
                   const Spacer(),
                   IconButton(
                     onPressed: () {},
                     icon: Icon(Icons.add, color: textColor),
                     style: IconButton.styleFrom(
-                      backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                      backgroundColor: isDarkMode
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.black.withOpacity(0.05),
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             // 2. Search Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -68,7 +91,11 @@ class _UserListPageState extends State<UserListPage> {
                 decoration: BoxDecoration(
                   color: surfaceColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isDarkMode ? Colors.grey.withOpacity(0.2) : Colors.grey[200]!),
+                  border: Border.all(
+                    color: isDarkMode
+                        ? Colors.grey.withOpacity(0.2)
+                        : Colors.grey[200]!,
+                  ),
                 ),
                 child: TextField(
                   controller: _searchController,
@@ -84,7 +111,7 @@ class _UserListPageState extends State<UserListPage> {
                 ),
               ),
             ),
-            
+
             // 3. Filter Chips
             SizedBox(
               height: 48,
@@ -98,15 +125,24 @@ class _UserListPageState extends State<UserListPage> {
                   return FilterChip(
                     label: Text(_filters[index]),
                     selected: isSelected,
-                    onSelected: (val) => setState(() => _selectedFilterIndex = index),
-                    backgroundColor: isDarkMode ? surfaceColor : Colors.grey[200],
+                    onSelected: (val) =>
+                        setState(() => _selectedFilterIndex = index),
+                    backgroundColor: isDarkMode
+                        ? surfaceColor
+                        : Colors.grey[200],
                     selectedColor: AppColors.primary,
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.black : (isDarkMode ? Colors.grey[300] : Colors.black87),
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isSelected
+                          ? Colors.black
+                          : (isDarkMode ? Colors.grey[300] : Colors.black87),
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
                     ),
                     side: BorderSide.none,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     showCheckmark: false,
                   );
                 },
@@ -123,17 +159,25 @@ class _UserListPageState extends State<UserListPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  
+
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No users found', style: TextStyle(color: subTextColor)));
+                    return Center(
+                      child: Text(
+                        'No users found',
+                        style: TextStyle(color: subTextColor),
+                      ),
+                    );
                   }
 
                   final query = _searchController.text.toLowerCase();
                   final filteredUsers = snapshot.data!.where((user) {
-                    final filterMatch = _selectedFilterIndex == 0 || 
-                                       user.role.toLowerCase() == _filters[_selectedFilterIndex].toLowerCase();
-                    final searchMatch = user.name.toLowerCase().contains(query) || 
-                                       user.email.toLowerCase().contains(query);
+                    final filterMatch =
+                        _selectedFilterIndex == 0 ||
+                        user.role.toLowerCase() ==
+                            _filters[_selectedFilterIndex].toLowerCase();
+                    final searchMatch =
+                        user.name.toLowerCase().contains(query) ||
+                        user.email.toLowerCase().contains(query);
                     return filterMatch && searchMatch;
                   }).toList();
 
@@ -142,7 +186,11 @@ class _UserListPageState extends State<UserListPage> {
                     itemCount: filteredUsers.length,
                     separatorBuilder: (c, i) => const SizedBox(height: 4),
                     itemBuilder: (context, index) {
-                      return _buildUserItem(filteredUsers[index], textColor, subTextColor);
+                      return _buildUserItem(
+                        filteredUsers[index],
+                        textColor,
+                        subTextColor,
+                      );
                     },
                   );
                 },
@@ -151,11 +199,6 @@ class _UserListPageState extends State<UserListPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.person_add, color: Colors.black),
-      ),
     );
   }
 
@@ -163,10 +206,22 @@ class _UserListPageState extends State<UserListPage> {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: AppColors.primary.withOpacity(0.1),
-        child: Text(user.name[0].toUpperCase(), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+        child: Text(
+          user.name[0].toUpperCase(),
+          style: const TextStyle(
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      title: Text(user.name, style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
-      subtitle: Text(user.email, style: TextStyle(color: subTextColor, fontSize: 12)),
+      title: Text(
+        user.name,
+        style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        user.email,
+        style: TextStyle(color: subTextColor, fontSize: 12),
+      ),
       trailing: _buildRoleBadge(user.role),
       onTap: () {},
     );
@@ -174,11 +229,21 @@ class _UserListPageState extends State<UserListPage> {
 
   Widget _buildRoleBadge(String role) {
     final color = UiUtils.getRoleColor(role);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(color: color.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-      child: Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color)),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        role.toUpperCase(),
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
     );
   }
 }

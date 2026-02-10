@@ -33,12 +33,20 @@ class _LoginPageState extends State<LoginPage> {
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDarkMode = brightness == Brightness.dark;
 
-    final backgroundColor = isDarkMode ? AppColors.backgroundDark : AppColors.backgroundLight;
+    final backgroundColor = isDarkMode
+        ? AppColors.backgroundDark
+        : AppColors.backgroundLight;
     final textColor = isDarkMode ? AppColors.textLight : AppColors.textDark;
-    final subTextColor = isDarkMode ? AppColors.textGrayDark : AppColors.textGray;
+    final subTextColor = isDarkMode
+        ? AppColors.textGrayDark
+        : AppColors.textGray;
     final inputBg = isDarkMode ? AppColors.inputBgDark : AppColors.inputBgLight;
-    final inputBorder = isDarkMode ? AppColors.inputBorderDark : AppColors.inputBorder;
-    final placeholderColor = isDarkMode ? AppColors.inputPlaceholderDark : AppColors.inputPlaceholder;
+    final inputBorder = isDarkMode
+        ? AppColors.inputBorderDark
+        : AppColors.inputBorder;
+    final placeholderColor = isDarkMode
+        ? AppColors.inputPlaceholderDark
+        : AppColors.inputPlaceholder;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -52,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                   Image.network(
+                  Image.network(
                     AppConstants.loginHeaderImageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
@@ -117,7 +125,11 @@ class _LoginPageState extends State<LoginPage> {
 
             // Main Content Area
             Container(
-              transform: Matrix4.translationValues(0, -24, 0), // -mt-6 equivalent
+              transform: Matrix4.translationValues(
+                0,
+                -24,
+                0,
+              ), // -mt-6 equivalent
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +178,10 @@ class _LoginPageState extends State<LoginPage> {
                           hintStyle: TextStyle(color: placeholderColor),
                           filled: true,
                           fillColor: inputBg,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 16),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 16,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(color: inputBorder),
@@ -177,7 +192,10 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: AppColors.primary, width: 2),
+                            borderSide: BorderSide(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
                           ),
                         ),
                         keyboardType: TextInputType.emailAddress,
@@ -194,7 +212,9 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: isDarkMode ? Colors.white70 : Colors.black87,
+                              color: isDarkMode
+                                  ? Colors.white70
+                                  : Colors.black87,
                             ),
                           ),
                         ],
@@ -209,7 +229,10 @@ class _LoginPageState extends State<LoginPage> {
                           hintStyle: TextStyle(color: placeholderColor),
                           filled: true,
                           fillColor: inputBg,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 16),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 16,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(color: inputBorder),
@@ -220,11 +243,16 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: AppColors.primary, width: 2),
+                            borderSide: BorderSide(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                               color: placeholderColor,
                             ),
                             onPressed: () {
@@ -235,28 +263,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(50, 30),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'Lupa Password?',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
 
+                      const SizedBox(height: 8),
+                      const SizedBox(height: 24),
                       const SizedBox(height: 16),
 
                       // Login Button
@@ -266,9 +275,15 @@ class _LoginPageState extends State<LoginPage> {
                         child: ElevatedButton(
                           onPressed: () async {
                             // 1. Validasi Input
-                            if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                            if (_emailController.text.isEmpty ||
+                                _passwordController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Email dan Password harus diisi'), backgroundColor: Colors.red),
+                                const SnackBar(
+                                  content: Text(
+                                    'Email dan Password harus diisi',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
                               );
                               return;
                             }
@@ -277,12 +292,15 @@ class _LoginPageState extends State<LoginPage> {
                             setState(() => _isLoading = true);
 
                             // Panggil Provider (Real Logic)
-                            final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                            final result = await authProvider.login(
-                              _emailController.text, 
-                              _passwordController.text
+                            final authProvider = Provider.of<AuthProvider>(
+                              context,
+                              listen: false,
                             );
-                            
+                            final result = await authProvider.login(
+                              _emailController.text,
+                              _passwordController.text,
+                            );
+
                             if (!mounted) return;
                             setState(() => _isLoading = false);
 
@@ -290,27 +308,45 @@ class _LoginPageState extends State<LoginPage> {
                             if (result['error'] == null) {
                               // SUKSES
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(result['message']), backgroundColor: Colors.green),
+                                SnackBar(
+                                  content: Text(result['message']),
+                                  backgroundColor: Colors.green,
+                                ),
                               );
 
                               // Redirect based on Role
-                              final user = result['data'] as UserModel; 
+                              final user = result['data'] as UserModel;
                               // Note: result['data'] is UserModel object from Provider
                               final role = user.role;
-                              
+
                               if (role == 'admin') {
-                                Navigator.pushReplacementNamed(context, AppRoutes.adminDashboard);
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.adminDashboard,
+                                );
                               } else if (role == 'courier') {
-                                Navigator.pushReplacementNamed(context, AppRoutes.courierDashboard);
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.courierDashboard,
+                                );
                               } else if (role == 'warehouse') {
-                                Navigator.pushReplacementNamed(context, AppRoutes.warehouseDashboard);
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.warehouseDashboard,
+                                );
                               } else {
-                                Navigator.pushReplacementNamed(context, AppRoutes.customerHome);
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.customerHome,
+                                );
                               }
                             } else {
                               // GAGAL
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(result['error']), backgroundColor: Colors.red),
+                                SnackBar(
+                                  content: Text(result['error']),
+                                  backgroundColor: Colors.red,
+                                ),
                               );
                             }
                           },
@@ -323,19 +359,23 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: _isLoading 
-                            ? const SizedBox(
-                                height: 24, width: 24, 
-                                child: CircularProgressIndicator(color: AppColors.backgroundDark, strokeWidth: 2)
-                              )
-                            : const Text(
-                            'LOGIN',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.backgroundDark,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'LOGIN',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -344,36 +384,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 32),
 
                   // Footer
-                  Center(
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        Text(
-                          'Belum punya akun? ',
-                          style: TextStyle(
-                            color: subTextColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            // TODO: Add navigation to Register
-                          },
-                          child: const Text(
-                            'Daftar sebagai Customer',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              decoration: TextDecoration.underline,
-                              decorationColor: AppColors.primary, 
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 24),
                   const SizedBox(height: 24),
                 ],
               ),

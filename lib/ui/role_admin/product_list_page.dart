@@ -13,9 +13,13 @@ class ProductListPage extends StatelessWidget {
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDarkMode = brightness == Brightness.dark;
 
-    final backgroundColor = isDarkMode ? AppColors.backgroundDark : AppColors.backgroundLight;
+    final backgroundColor = isDarkMode
+        ? AppColors.backgroundDark
+        : AppColors.backgroundLight;
     final textColor = isDarkMode ? AppColors.textLight : AppColors.textDark;
-    final subTextColor = isDarkMode ? AppColors.textGrayDark : AppColors.textGray;
+    final subTextColor = isDarkMode
+        ? AppColors.textGrayDark
+        : AppColors.textGray;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -32,7 +36,12 @@ class ProductListPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No products found', style: TextStyle(color: subTextColor)));
+            return Center(
+              child: Text(
+                'No products found',
+                style: TextStyle(color: subTextColor),
+              ),
+            );
           }
 
           final products = snapshot.data!;
@@ -45,9 +54,16 @@ class ProductListPage extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isDarkMode ? Colors.white.withOpacity(0.05) : Colors.white,
+                  color: isDarkMode
+                      ? Colors.white.withOpacity(0.05)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
@@ -55,9 +71,15 @@ class ProductListPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
                         product.imageUrl,
-                        width: 60, height: 60,
+                        width: 60,
+                        height: 60,
                         fit: BoxFit.cover,
-                        errorBuilder: (c, e, s) => Container(color: Colors.grey[300], width: 60, height: 60, child: const Icon(Icons.image)),
+                        errorBuilder: (c, e, s) => Container(
+                          color: Colors.grey[300],
+                          width: 60,
+                          height: 60,
+                          child: const Icon(Icons.image),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -65,29 +87,47 @@ class ProductListPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(product.name, style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 16)),
+                          Text(
+                            product.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                              fontSize: 16,
+                            ),
+                          ),
                           const SizedBox(height: 4),
-                          Text('Price: \$${product.price}', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                          Text(
+                            'Price: \$${product.price}',
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Column(
                       children: [
-                        Text('Stock', style: TextStyle(color: subTextColor, fontSize: 10)),
-                        Text('${product.stock}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: product.stock < 10 ? Colors.red : textColor)),
+                        Text(
+                          'Stock',
+                          style: TextStyle(color: subTextColor, fontSize: 10),
+                        ),
+                        Text(
+                          '${product.stock}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: product.stock < 10 ? Colors.red : textColor,
+                          ),
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               );
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.black),
       ),
     );
   }
