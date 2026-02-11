@@ -167,6 +167,31 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
             },
           ),
 
+          // 5. Completed History
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text('Riwayat Selesai', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+            ),
+          ),
+          StreamBuilder<List<OrderModel>>(
+            stream: orderProvider.getOrdersByCourier(user?.uid ?? ''),
+            builder: (context, snapshot) {
+              final completed = snapshot.data?.where((o) => o.status == 'delivered' || o.status == 'completed').toList() ?? [];
+              if (completed.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: Center(child: Padding(padding: const EdgeInsets.all(32), child: Text("Belum ada riwayat pengiriman.", style: TextStyle(color: subTextColor)))),
+                );
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _buildHistoryCard(completed[index], surfaceColor, textColor, subTextColor),
+                  childCount: completed.length,
+                ),
+              );
+            },
+          ),
+
           const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
         ],
       ),
@@ -266,7 +291,8 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(order.productName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+              Expanded(child: Text(order.productName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor), overflow: TextOverflow.ellipsis)),
+              const SizedBox(width: 8),
               Text(order.trackingId, style: TextStyle(fontSize: 12, color: subTextColor)),
             ],
           ),
@@ -284,7 +310,29 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
             child: Consumer<OrderProvider>(
               builder: (context, provider, child) {
                 return ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.courierScan), 
+                  onPressed: () async {
+                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    final user = authProvider.user;
+                    if (user == null) return;
+
+                    final success = await provider.acceptJob(
+                      orderId: order.orderId,
+                      courierUid: user.uid,
+                      courierName: user.name,
+                    );
+
+                    if (mounted) {
+                      if (success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Tugas berhasil diambil!'), backgroundColor: Colors.green),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Gagal mengambil tugas'), backgroundColor: Colors.red),
+                        );
+                      }
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isDarkMode ? const Color(0xFF234248) : Colors.black87,
                     foregroundColor: Colors.white,
@@ -296,6 +344,70 @@ class _DashboardCourierPageState extends State<DashboardCourierPage> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryCard(OrderModel order, Color surfaceColor, Color textColor, Color subTextColor) {
+    final isCompleted = order.status == 'completed';
+    final statusColor = isCompleted ? Colors.green : Colors.blue;
+    final statusLabel = isCompleted ? 'Selesai' : 'Telah Diantar';
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.courierDeliveryDetail, arguments: order),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
+        ),
+        child: Row(
+          children: [
+            // Status icon
+            Container(
+              width: 44, height: 44,
+              decoration: BoxDecoration(
+                color: statusColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                isCompleted ? Icons.check_circle_outline : Icons.local_shipping_outlined,
+                color: statusColor,
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(order.productName, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textColor)),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, size: 14, color: subTextColor),
+                      const SizedBox(width: 4),
+                      Expanded(child: Text(order.destination, style: TextStyle(fontSize: 12, color: subTextColor), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Status badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(statusLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor)),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right, color: subTextColor, size: 20),
+          ],
+        ),
       ),
     );
   }

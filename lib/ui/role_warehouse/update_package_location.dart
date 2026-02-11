@@ -35,9 +35,9 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
   ];
 
   final List<Map<String, String>> _statuses = [
-    {'value': 'at_warehouse', 'label': 'Barang Diterima (Inbound)'},
-    {'value': 'at_warehouse', 'label': 'Dalam Penyortiran (Sorting)'},
-    {'value': 'at_warehouse', 'label': 'Siap Dikirim (Outbound)'},
+    {'value': 'at_warehouse_inbound', 'label': 'Barang Diterima (Inbound)', 'status': 'at_warehouse'},
+    {'value': 'at_warehouse_sorting', 'label': 'Dalam Penyortiran (Sorting)', 'status': 'at_warehouse'},
+    {'value': 'at_warehouse_outbound', 'label': 'Siap Dikirim (Outbound)', 'status': 'at_warehouse'},
   ];
 
   String? _selectedLocation;
@@ -83,11 +83,19 @@ class _UpdatePackageLocationPageState extends State<UpdatePackageLocationPage> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final updaterName = authProvider.user?.name ?? 'Warehouse Admin';
 
+    // Resolve actual Firestore status from the unique dropdown value
+    final selectedStatusEntry = _statuses.firstWhere(
+      (s) => s['value'] == _selectedStatus,
+      orElse: () => {'status': 'at_warehouse', 'label': ''},
+    );
+    final firestoreStatus = selectedStatusEntry['status'] ?? 'at_warehouse';
+    final statusLabel = selectedStatusEntry['label'] ?? _customDescription;
+
     final success = await orderProvider.updateStatus(
       orderId: _order!.orderId,
-      status: _selectedStatus!,
+      status: firestoreStatus,
       location: _selectedLocation!,
-      description: _customDescription,
+      description: _customDescription.isNotEmpty ? _customDescription : statusLabel,
       updaterName: updaterName,
     );
 

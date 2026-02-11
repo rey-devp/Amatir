@@ -1,31 +1,47 @@
-
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as path;
+import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
+/// Service for saving proof-of-delivery images locally on the device.
+///
+/// Images are stored in the app's documents directory under a `proofs/` folder.
+/// The local file path is returned and saved to Firestore as `proof_url`.
 class StorageService {
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-
-  Future<String> uploadImage(File file, String folderName) async {
+  /// Saves an [XFile] (from image_picker) to the local app folder.
+  ///
+  /// Returns the absolute local file path for storage in Firestore.
+  Future<String> saveImageLocally(XFile xFile) async {
     try {
-     
-      String fileName = path.basename(file.path);
-      
-      // Buat referensi lokasi file di Firebase Storage
-      // Format: folderName/timestamp_filename
-      String uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}_$fileName';
-      Reference ref = _storage.ref().child('$folderName/$uniqueFileName');
+      // 1. Get the app's persistent documents directory
+      final Directory appDir = await getApplicationDocumentsDirectory();
+      final String proofsDir = p.join(appDir.path, 'proofs');
 
-      UploadTask uploadTask = ref.putFile(file);
-      
-      TaskSnapshot snapshot = await uploadTask;
+      // 2. Create the proofs folder if it doesn't exist
+      final Directory dir = Directory(proofsDir);
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
 
-      // Ambil URL download agar bisa disimpan di Firestore
-      String downloadUrl = await snapshot.ref.getDownloadURL();
-      
-      return downloadUrl;
+      // 3. Generate unique filename
+      final String uniqueName =
+          '${DateTime.now().millisecondsSinceEpoch}_${p.basename(xFile.path)}';
+      final String savedPath = p.join(proofsDir, uniqueName);
+
+      // 4. Copy image to permanent location
+      final File sourceFile = File(xFile.path);
+      await sourceFile.copy(savedPath);
+
+      debugPrint('✅ Image saved locally: $savedPath');
+      return savedPath;
     } catch (e) {
-      throw Exception('Gagal upload gambar: $e');
+      throw Exception('Gagal menyimpan gambar: $e');
     }
+  }
+
+  /// Checks if a local proof image file exists.
+  Future<bool> proofExists(String path) async {
+    return File(path).exists();
   }
 }

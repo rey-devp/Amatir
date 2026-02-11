@@ -77,13 +77,22 @@ class _CourierScannerPageState extends State<CourierScannerPage> {
     );
 
     try {
-      // Logic: Update status to 'on_delivery'
-      final success = await orderProvider.updateStatus(
-        orderId: trackingId, // Assuming trackingId is used as orderId for simplicity or can be mapped
-        status: 'on_delivery',
-        location: 'Pos Logistik',
-        description: 'Kurir telah mengambil paket dan mulai mengantar',
-        updaterName: authProvider.user?.name ?? 'Kurir',
+      // 1. Lookup order by tracking ID
+      final order = await orderProvider.getOrderByTrackingId(trackingId);
+
+      if (order == null) {
+        if (mounted) {
+          Navigator.pop(context); // Close loading
+          _showError('Paket dengan ID "$trackingId" tidak ditemukan.');
+        }
+        return;
+      }
+
+      // 2. Accept job using real orderId and courier UID
+      final success = await orderProvider.acceptJob(
+        orderId: order.orderId,
+        courierUid: authProvider.user?.uid ?? '',
+        courierName: authProvider.user?.name ?? 'Kurir',
       );
 
       if (mounted) {
@@ -95,7 +104,7 @@ class _CourierScannerPageState extends State<CourierScannerPage> {
           );
           Navigator.pop(context); // Back to dashboard
         } else {
-           _showError('Gagal mengambil tugas. Pastikan ID paket benar.');
+           _showError('Gagal mengambil tugas. Coba lagi.');
         }
       }
     } catch (e) {

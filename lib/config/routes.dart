@@ -6,6 +6,7 @@ import '../ui/role_customer/order_detail_customer.dart';
 import '../ui/role_customer/my_orders_page.dart';
 import '../ui/role_courier/dashboard_courier.dart';
 import '../ui/role_courier/delivery_execution_page.dart';
+import '../ui/role_courier/delivery_detail_page.dart';
 import '../ui/role_courier/scanner_page.dart';
 import '../ui/role_warehouse/dashboard_warehouse.dart';
 import '../ui/role_admin/admin_dashboard.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const String courierDashboard = '/courier-dashboard';
   static const String courierScan = '/courier-scan';
   static const String courierDelivery = '/courier-delivery-execution';
+  static const String courierDeliveryDetail = '/courier-delivery-detail';
 
   // Customer
   static const String customerHome = '/customer-home';
@@ -54,6 +56,7 @@ class AppRoutes {
     courierDashboard: (context) => const DashboardCourierPage(),
     courierScan: (context) => const CourierScannerPage(),
     courierDelivery: (context) => const DeliveryExecutionPage(),
+    courierDeliveryDetail: (context) => const DeliveryDetailPage(),
 
     // Customer
     customerHome: (context) => const HomeCustomerPage(),

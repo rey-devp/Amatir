@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../models/order_model.dart';
+import '../../providers/order_provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../utils/ui_utils.dart';
 import '../widgets/tracking_timeline.dart';
 
 class OrderDetailCustomerPage extends StatefulWidget {
@@ -12,6 +16,7 @@ class OrderDetailCustomerPage extends StatefulWidget {
 
 class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
   OrderModel? _order;
+  bool _isConfirming = false;
 
   @override
   void didChangeDependencies() {
@@ -19,6 +24,30 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is OrderModel) {
       _order = args;
+    }
+  }
+
+  Future<void> _confirmReceived() async {
+    if (_order == null) return;
+    
+    setState(() => _isConfirming = true);
+    
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    
+    final success = await orderProvider.confirmReceived(
+      orderId: _order!.orderId,
+      customerName: authProvider.user?.name ?? 'Customer',
+    );
+
+    if (mounted) {
+      setState(() => _isConfirming = false);
+      if (success) {
+        UiUtils.showSuccessSnackBar(context, 'Pesanan berhasil dikonfirmasi!');
+        Navigator.pop(context);
+      } else {
+        UiUtils.showErrorSnackBar(context, 'Gagal mengkonfirmasi pesanan');
+      }
     }
   }
 
@@ -169,23 +198,23 @@ class _OrderDetailCustomerPageState extends State<OrderDetailCustomerPage> {
           width: double.infinity,
           height: 50,
           child: ElevatedButton(
-            onPressed: () {
-              // TODO: Implement confirmation logic
-            },
+            onPressed: _isConfirming ? null : _confirmReceived,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.backgroundDark,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               elevation: 0,
             ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                 Text('Konfirmasi Terima Barang', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                 SizedBox(width: 8),
-                 Icon(Icons.check_circle, size: 20),
-              ],
-            ),
+            child: _isConfirming
+              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+              : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Text('Konfirmasi Terima Barang', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                   SizedBox(width: 8),
+                   Icon(Icons.check_circle, size: 20),
+                ],
+              ),
           ),
         ),
       ) : null,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../config/routes.dart';
 import '../../providers/order_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/order_model.dart';
 import '../widgets/order_card.dart';
 import 'warehouse_scan_page.dart';
@@ -76,10 +78,16 @@ class _DashboardWarehousePageState extends State<DashboardWarehousePage> {
                         ),
                       ],
                     ),
-                    Container(
-                      width: 40, height: 40,
-                      decoration: BoxDecoration(color: surfaceColor, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), spreadRadius: 1)]),
-                      child: Icon(Icons.notifications_outlined, color: subTextColor),
+                    GestureDetector(
+                      onTap: () {
+                        Provider.of<AuthProvider>(context, listen: false).logout();
+                        Navigator.pushReplacementNamed(context, AppRoutes.login);
+                      },
+                      child: Container(
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(color: surfaceColor, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), spreadRadius: 1)]),
+                        child: Icon(Icons.logout, color: subTextColor),
+                      ),
                     ),
                   ],
                 ),

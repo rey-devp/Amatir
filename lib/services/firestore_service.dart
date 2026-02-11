@@ -72,7 +72,7 @@ class FirestoreService {
 
   // UPDATE STATUS DENGAN TRANSACTION (GABUNGAN HISTORY)
   Future<void> updateOrderStatusWithHistory(
-      String orderId, String newStatus, String location, String description, String updatedBy, {String? proofUrl}) async {
+      String orderId, String newStatus, String location, String description, String updatedBy, {String? proofUrl, String? courierId}) async {
     final docRef = _ordersRef.doc(orderId);
 
     await _db.runTransaction((transaction) async {
@@ -92,15 +92,32 @@ class FirestoreService {
         'proof_url': proofUrl,
       });
 
-      transaction.update(docRef, {
+      final updateData = <String, dynamic>{
         'status': newStatus,
         'tracking_history': currentHistory,
         'current_location': location, 
         'updated_at': FieldValue.serverTimestamp(),
-        'courier_id': updatedBy, 
+        if (courierId != null) 'courier_id': courierId,
         if (proofUrl != null) 'proof_url': proofUrl,
-      });
+      };
+
+      transaction.update(docRef, updateData);
     });
+  }
+
+  // GET ORDER BY TRACKING ID (untuk Scanner lookup)
+  Future<OrderModel?> getOrderByTrackingId(String trackingId) async {
+    final snapshot = await _ordersRef
+        .where('tracking_id', isEqualTo: trackingId)
+        .limit(1)
+        .get();
+    
+    if (snapshot.docs.isNotEmpty) {
+      return OrderModel.fromMap(
+        snapshot.docs.first.data() as Map<String, dynamic>,
+      );
+    }
+    return null;
   }
 
   // GET ORDERS BY COURIER

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
@@ -21,13 +22,11 @@ class AuthProvider with ChangeNotifier {
     final currentUser = _authService.currentUser;
     if (currentUser != null) {
       try {
-        // Ambil data terbaru dari Firestore
         UserModel userData = await _authService.getUserData(currentUser.uid);
         _user = userData;
         notifyListeners();
         return true;
       } catch (e) {
-        // Jika gagal ambil data (misal dihapus), logout paksa
         await logout();
         return false;
       }
@@ -44,17 +43,38 @@ class AuthProvider with ChangeNotifier {
       setLoading(false);
 
       return {"message": "Login Berhasil", "data": loggedInUser, "error": null};
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       setLoading(false);
       return {
         "message": "Login Gagal",
         "data": null,
-        "error": e.toString().replaceAll("Exception: ", ""),
+        "error": _getFirebaseErrorMessage(e.code),
+      };
+    } catch (e) {
+      setLoading(false);
+      // Fallback: Check if error string contains Firebase error codes
+      String errorMessage = e.toString();
+      String finalError = errorMessage.replaceAll("Exception: ", "");
+      
+      if (errorMessage.contains("invalid-credential")) {
+        finalError = _getFirebaseErrorMessage("invalid-credential");
+      } else if (errorMessage.contains("user-not-found")) {
+        finalError = _getFirebaseErrorMessage("user-not-found");
+      } else if (errorMessage.contains("wrong-password")) {
+        finalError = _getFirebaseErrorMessage("wrong-password");
+      } else if (errorMessage.contains("network-request-failed")) {
+        finalError = _getFirebaseErrorMessage("network-request-failed");
+      }
+
+      return {
+        "message": "Login Gagal",
+        "data": null,
+        "error": finalError,
       };
     }
   }
 
-  // REGISTER (Ini yang tadi hilang)
+  // REGISTER
   Future<Map<String, dynamic>> register(
     String email,
     String password,
@@ -62,7 +82,6 @@ class AuthProvider with ChangeNotifier {
   ) async {
     try {
       setLoading(true);
-      // Panggil Service
       UserModel registeredUser = await _authService.register(
         email: email,
         password: password,
@@ -76,6 +95,13 @@ class AuthProvider with ChangeNotifier {
         "message": "Registrasi Berhasil",
         "data": registeredUser,
         "error": null,
+      };
+    } on FirebaseAuthException catch (e) {
+      setLoading(false);
+      return {
+        "message": "Registrasi Gagal",
+        "data": null,
+        "error": _getFirebaseErrorMessage(e.code),
       };
     } catch (e) {
       setLoading(false);
@@ -111,5 +137,33 @@ class AuthProvider with ChangeNotifier {
       }
     }
     return null;
+  }
+
+  /// Translates Firebase Auth error codes to Indonesian messages.
+  String _getFirebaseErrorMessage(String code) {
+    switch (code) {
+      case 'invalid-email':
+        return 'Format email tidak valid.';
+      case 'user-disabled':
+        return 'Akun ini telah dinonaktifkan.';
+      case 'user-not-found':
+        return 'Email tidak terdaftar. Silakan daftar terlebih dahulu.';
+      case 'wrong-password':
+        return 'Password salah. Silakan coba lagi.';
+      case 'invalid-credential':
+        return 'Email atau password salah.';
+      case 'too-many-requests':
+        return 'Terlalu banyak percobaan login. Coba lagi nanti.';
+      case 'email-already-in-use':
+        return 'Email sudah digunakan akun lain.';
+      case 'weak-password':
+        return 'Password terlalu lemah. Minimal 6 karakter.';
+      case 'network-request-failed':
+        return 'Tidak ada koneksi internet.';
+      case 'operation-not-allowed':
+        return 'Metode login ini tidak diizinkan.';
+      default:
+        return 'Terjadi kesalahan ($code). Silakan coba lagi.';
+    }
   }
 }

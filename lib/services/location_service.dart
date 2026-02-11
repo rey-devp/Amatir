@@ -1,28 +1,39 @@
 import 'package:geolocator/geolocator.dart';
 
+/// Service for GPS location operations.
+///
+/// Provides permission checking, one-time location fetch,
+/// and real-time position streaming.
 class LocationService {
-  // Cek Permission dulu 
+  /// Checks and requests location permission.
   Future<bool> checkPermission() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return false;
+
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) return false;
     }
+    if (permission == LocationPermission.deniedForever) return false;
+
     return true;
   }
 
-  // Stream Lokasi Real-time
+  /// Streams real-time position updates.
   Stream<Position> getPositionStream() {
     return Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10, // Update setiap pindah 10 meter
+        distanceFilter: 10,
       ),
     );
   }
-  
-  // Get lokasi sekali saja
+
+  /// Gets the current position once.
   Future<Position> getCurrentPosition() async {
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
   }
 }

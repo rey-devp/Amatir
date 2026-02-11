@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_colors.dart';
 import '../../models/order_model.dart';
 import '../../providers/order_provider.dart';
@@ -19,13 +20,15 @@ class DeliveryExecutionPage extends StatefulWidget {
 }
 
 class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
-  File? _imageFile;
+  XFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
   final LocationService _locationService = LocationService();
   final StorageService _storageService = StorageService();
   
   Position? _currentPosition;
   bool _isUploading = false;
+  bool _isLoadingLocation = false;
+  String? _locationError;
   final TextEditingController _noteController = TextEditingController();
 
   @override
@@ -35,10 +38,38 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
   }
 
   Future<void> _initLocation() async {
-    final hasPermission = await _locationService.checkPermission();
-    if (hasPermission) {
-      final pos = await _locationService.getCurrentPosition();
-      setState(() => _currentPosition = pos);
+    setState(() {
+      _isLoadingLocation = true;
+      _locationError = null;
+    });
+
+    try {
+      final hasPermission = await _locationService.checkPermission();
+      if (!hasPermission) {
+        setState(() {
+          _isLoadingLocation = false;
+          _locationError = 'Izin lokasi ditolak. Aktifkan di Settings.';
+        });
+        return;
+      }
+
+      final pos = await _locationService.getCurrentPosition()
+          .timeout(const Duration(seconds: 15));
+      if (mounted) {
+        setState(() {
+          _currentPosition = pos;
+          _isLoadingLocation = false;
+          _locationError = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingLocation = false;
+          _locationError = 'Gagal mendapatkan lokasi. Coba lagi.';
+        });
+        debugPrint('GPS Error: $e');
+      }
     }
   }
 
@@ -46,7 +77,7 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        _imageFile = File(pickedFile.path);
+        _imageFile = pickedFile;
       });
     }
   }
@@ -60,8 +91,8 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
     setState(() => _isUploading = true);
 
     try {
-      // 1. Upload Proof Image
-      final imageUrl = await _storageService.uploadImage(_imageFile!, 'proofs');
+      // 1. Save proof image locally
+      final localPath = await _storageService.saveImageLocally(_imageFile!);
 
       // 2. Get current location string
       String locationStr = "Lokasi Tidak Diketahui";
@@ -77,7 +108,7 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
         location: locationStr,
         description: _noteController.text.isNotEmpty ? _noteController.text : 'Paket telah sampai di tujuan',
         updaterName: user?.name ?? 'Kurir',
-        proofUrl: imageUrl,
+        proofUrl: localPath,
       );
 
       if (context.mounted) {
@@ -140,7 +171,7 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
                           fit: StackFit.expand,
                           children: [
                             if (_imageFile != null)
-                              Image.file(_imageFile!, fit: BoxFit.cover)
+                              Image.file(File(_imageFile!.path), fit: BoxFit.cover)
                             else
                               const Center(child: Icon(Icons.camera_alt, color: Colors.white, size: 64)),
                             
@@ -199,16 +230,45 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
                             decoration: BoxDecoration(color: surfaceColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.withOpacity(0.1))),
                             child: Row(
                               children: [
-                                const Icon(Icons.location_on, color: AppColors.primary),
+                                Icon(
+                                  _locationError != null ? Icons.location_off : Icons.location_on,
+                                  color: _locationError != null ? Colors.red : AppColors.primary,
+                                ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text('Lokasi Terkini', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor)),
-                                      Text(_currentPosition != null ? '${_currentPosition!.latitude}, ${_currentPosition!.longitude}' : 'Mencari lokasi...', style: const TextStyle(fontSize: 12, color: AppColors.textGray)),
+                                      const SizedBox(height: 2),
+                                      if (_isLoadingLocation)
+                                        Row(
+                                          children: [
+                                            const SizedBox(height: 12, width: 12, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary)),
+                                            const SizedBox(width: 8),
+                                            Text('Mencari lokasi...', style: TextStyle(fontSize: 12, color: subTextColor)),
+                                          ],
+                                        )
+                                      else if (_locationError != null)
+                                        Text(_locationError!, style: const TextStyle(fontSize: 12, color: Colors.red))
+                                      else if (_currentPosition != null)
+                                        Text(
+                                          '${_currentPosition!.latitude.toStringAsFixed(6)}, ${_currentPosition!.longitude.toStringAsFixed(6)}',
+                                          style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w500),
+                                        )
+                                      else
+                                        Text('Lokasi belum tersedia', style: TextStyle(fontSize: 12, color: subTextColor)),
                                     ],
                                   ),
+                                ),
+                                // Refresh button
+                                IconButton(
+                                  onPressed: _isLoadingLocation ? null : _initLocation,
+                                  icon: Icon(
+                                    Icons.refresh,
+                                    color: _isLoadingLocation ? Colors.grey : AppColors.primary,
+                                  ),
+                                  tooltip: 'Refresh Lokasi',
                                 ),
                               ],
                             ),
@@ -226,6 +286,40 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
                               fillColor: surfaceColor,
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                             ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Call / WhatsApp Buttons
+                          Text('Hubungi Penerima', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: subTextColor)),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () => _launchUrl('tel:+6281234567890'),
+                                  icon: const Icon(Icons.phone, size: 18),
+                                  label: const Text('Telepon'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppColors.primary,
+                                    side: const BorderSide(color: AppColors.primary),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () => _launchUrl('https://wa.me/6281234567890'),
+                                  icon: const Icon(Icons.message, size: 18),
+                                  label: const Text('WhatsApp'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Colors.green,
+                                    side: const BorderSide(color: Colors.green),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 100),
                         ],
@@ -254,6 +348,17 @@ class _DeliveryExecutionPageState extends State<DeliveryExecutionPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        UiUtils.showErrorSnackBar(context, 'Tidak dapat membuka $url');
+      }
+    }
   }
 
   Widget _buildCornerGuide(bool isTop, bool isLeft) {

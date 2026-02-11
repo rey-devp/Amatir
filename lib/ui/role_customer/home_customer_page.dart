@@ -44,7 +44,6 @@ class _HomeCustomerPageState extends State<HomeCustomerPage> {
         ? AppColors.textGrayDark
         : AppColors.textGray;
     final cardColor = isDarkMode ? const Color(0xFF16282b) : Colors.white;
-    final cardColor = isDarkMode ? const Color(0xFF16282b) : Colors.white;
 
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;

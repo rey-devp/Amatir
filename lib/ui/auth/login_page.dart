@@ -354,11 +354,33 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                 }
                               } else {
-                                // GAGAL
+                                // GAGAL — Show styled error
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(result['error']),
-                                    backgroundColor: Colors.red,
+                                    content: Row(
+                                      children: [
+                                        const Icon(Icons.error_outline, color: Colors.white),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Text('Login Gagal', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                                              Text(
+                                                result['error'],
+                                                style: const TextStyle(fontSize: 13, color: Colors.white70),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.red[700],
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    margin: const EdgeInsets.all(16),
+                                    duration: const Duration(seconds: 4),
                                   ),
                                 );
                               }

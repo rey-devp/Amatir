@@ -38,9 +38,9 @@ class OrderProvider extends ChangeNotifier {
     return _firestoreService.getOrdersByCustomer(uid);
   }
 
-  // Stream low-priority (available jobs)
+  // Stream low-priority (available jobs — orders ready at warehouse for pickup)
   Stream<List<OrderModel>> getAvailableJobs() {
-    return _firestoreService.getOrdersByStatus('pending');
+    return _firestoreService.getOrdersByStatus('at_warehouse');
   }
 
   Stream<List<OrderModel>> getOrdersByStatus(String status) {
@@ -59,6 +59,7 @@ class OrderProvider extends ChangeNotifier {
     required String location,
     required String updaterName,
     String? proofUrl,
+    String? courierId,
   }) async {
     try {
       await _firestoreService.updateOrderStatusWithHistory(
@@ -68,12 +69,62 @@ class OrderProvider extends ChangeNotifier {
         description,
         updaterName,
         proofUrl: proofUrl,
+        courierId: courierId,
       );
 
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint("Error update status: $e"); // Ganti print jadi debugPrint
+      debugPrint("Error update status: $e");
+      return false;
+    }
+  }
+
+  /// Courier accepts a job — sets courier_id and updates status to on_delivery.
+  Future<bool> acceptJob({
+    required String orderId,
+    required String courierUid,
+    required String courierName,
+  }) async {
+    try {
+      await _firestoreService.updateOrderStatusWithHistory(
+        orderId,
+        'on_delivery',
+        'Pos Logistik',
+        'Kurir $courierName telah mengambil paket dan mulai mengantar',
+        courierName,
+        courierId: courierUid,
+      );
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint("Error accept job: $e");
+      return false;
+    }
+  }
+
+  /// Lookup order by tracking ID (for QR scanner).
+  Future<OrderModel?> getOrderByTrackingId(String trackingId) {
+    return _firestoreService.getOrderByTrackingId(trackingId);
+  }
+
+  /// Customer confirms receipt — updates status to completed.
+  Future<bool> confirmReceived({
+    required String orderId,
+    required String customerName,
+  }) async {
+    try {
+      await _firestoreService.updateOrderStatusWithHistory(
+        orderId,
+        'completed',
+        'Alamat Penerima',
+        'Paket telah diterima oleh $customerName',
+        customerName,
+      );
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint("Error confirm receipt: $e");
       return false;
     }
   }

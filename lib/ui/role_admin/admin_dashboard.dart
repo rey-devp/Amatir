@@ -66,19 +66,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
             actions: [
               IconButton(
-                onPressed: () {
-                  // Logout logic
-                  Provider.of<AdminProvider>(
+                onPressed: () async {
+                  await Provider.of<AuthProvider>(
                     context,
                     listen: false,
-                  ).logout(); // Assuming AdminProvider or AuthProvider has logout
-                  // Actually AuthProvider handles logout usually, let's check.
-                  // Redirect to login
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    AppRoutes.login,
-                    (route) => false,
-                  );
+                  ).logout();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.login,
+                      (route) => false,
+                    );
+                  }
                 },
                 icon: const Icon(Icons.logout),
                 color: textColor,
